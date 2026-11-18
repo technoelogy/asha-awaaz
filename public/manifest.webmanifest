@@ -1,0 +1,26 @@
+{
+  "name": "ASHA Awaaz — Voice Visit Log",
+  "short_name": "ASHA Awaaz",
+  "description": "Voice-first visit logging for India's ASHA workers. Speak the note; it becomes a structured PHC record.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f7f4",
+  "theme_color": "#15803d",
+  "lang": "hi-IN",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
