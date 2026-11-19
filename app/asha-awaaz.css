@@ -213,3 +213,82 @@
 
 .aa-footer { text-align: center; color: var(--aa-muted); font-size: 0.74rem; margin-top: 28px; line-height: 1.6; }
 .aa-footer a { color: var(--aa-brand-ink); text-decoration: underline; }
+
+/* --- danger signs ---------------------------------------------------- */
+.aa-danger {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--aa-line);
+  border-radius: 14px;
+  background: #fbfcf9;
+}
+.aa-danger[data-alert="true"] { border-color: #f0c9c9; background: #fdf1f1; }
+.aa-danger-alert { margin: 10px 0 0; font-size: 0.86rem; font-weight: 600; color: var(--aa-danger); }
+.aa-danger-list { list-style: none; margin: 10px 0 0; padding: 0; }
+.aa-danger-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--aa-line);
+}
+.aa-danger-row:last-child { border-bottom: 0; }
+.aa-danger-name { font-size: 0.92rem; }
+.aa-danger-row[data-status="present"] .aa-danger-name { color: var(--aa-danger); font-weight: 600; }
+.aa-danger-row[data-status="unclear"] .aa-danger-name { color: var(--aa-warn); }
+.aa-seg button[data-danger="true"][aria-pressed="true"] { background: var(--aa-danger); color: #fff; }
+
+/* --- cohort picker (who is this visit for?) --------------------------- */
+.aa-cohorts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0 6px;
+}
+.aa-cohort {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1.5px solid var(--aa-line);
+  border-radius: 14px;
+  background: var(--aa-surface);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, transform 0.06s;
+}
+.aa-cohort[data-live="true"]:hover {
+  border-color: var(--aa-brand);
+  background: #f3faf4;
+}
+.aa-cohort[data-live="true"]:active { transform: scale(0.99); }
+.aa-cohort[data-live="false"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #fafafa;
+}
+.aa-cohort-emoji { font-size: 1.7rem; line-height: 1; }
+.aa-cohort-text { display: flex; flex-direction: column; flex: 1; }
+.aa-cohort-title { font-weight: 700; font-size: 1rem; color: var(--aa-ink); }
+.aa-cohort-sub { font-size: 0.8rem; color: var(--aa-muted); margin-top: 2px; }
+.aa-cohort-soon {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eee;
+  color: var(--aa-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* cohort tag on the confirm screen */
+.aa-cohort-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-right: 4px;
+  vertical-align: 1px;
+}
+.aa-cohort-tag[data-cohort="pregnant"] { background: #eaf4ff; color: #1e5a9e; }
+.aa-cohort-tag[data-cohort="adolescent"] { background: #f3eaff; color: #6b3fa0; }

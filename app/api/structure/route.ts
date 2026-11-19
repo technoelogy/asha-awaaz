@@ -14,11 +14,11 @@
 
 import { enforceGuardrails } from "../../lib/validator";
 import {
-  STRUCTURE_SYSTEM_PROMPT,
+  systemPromptForCohort,
   buildUserMessage,
 } from "../../lib/structurePrompt";
 import { getMockSample } from "../../lib/mockData";
-import { VisitLanguage } from "../../lib/schema";
+import { VisitLanguage, Cohort } from "../../lib/schema";
 
 export const runtime = "nodejs";
 
@@ -29,6 +29,7 @@ const ANTHROPIC_VERSION = "2023-06-01";
 interface StructureRequest {
   transcript?: string;
   language?: VisitLanguage;
+  cohort?: Cohort;
   mockSampleId?: string;
 }
 
@@ -56,6 +57,7 @@ function extractJson(text: string): Record<string, unknown> {
 
 async function callAnthropic(
   verbatim: string,
+  cohort: Cohort,
 ): Promise<Record<string, unknown>> {
   const res = await fetch(ANTHROPIC_URL, {
     method: "POST",
@@ -68,8 +70,8 @@ async function callAnthropic(
       model: process.env.ASHA_MODEL || DEFAULT_MODEL,
       max_tokens: 1024,
       temperature: 0, // deterministic structuring, no creative gap-filling
-      system: STRUCTURE_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: buildUserMessage(verbatim) }],
+      system: systemPromptForCohort(cohort),
+      messages: [{ role: "user", content: buildUserMessage(verbatim, cohort) }],
     }),
   });
 
@@ -96,6 +98,7 @@ export async function POST(req: Request) {
   }
 
   const language: VisitLanguage = body.language === "hi" ? "hi" : "hi-en";
+  const cohort: Cohort = body.cohort === "adolescent" ? "adolescent" : "pregnant";
   const mock = isMockMode();
 
   try {
@@ -106,10 +109,12 @@ export async function POST(req: Request) {
       const sample = body.mockSampleId
         ? getMockSample(body.mockSampleId)
         : null;
+      // A sample carries its own cohort; free transcript uses the picked cohort.
+      const effectiveCohort: Cohort = sample ? sample.cohort : cohort;
       const verbatim =
         body.transcript?.trim() || sample?.transcript || "";
       const raw = sample ? sample.rawModelOutput : {};
-      const visitNote = enforceGuardrails(raw, language, verbatim);
+      const visitNote = enforceGuardrails(raw, effectiveCohort, language, verbatim);
       return Response.json({ mode: "mock", visitNote });
     }
 
@@ -117,8 +122,8 @@ export async function POST(req: Request) {
     if (!verbatim) {
       return Response.json({ error: "empty_transcript" }, { status: 400 });
     }
-    const raw = await callAnthropic(verbatim);
-    const visitNote = enforceGuardrails(raw, language, verbatim);
+    const raw = await callAnthropic(verbatim, cohort);
+    const visitNote = enforceGuardrails(raw, cohort, language, verbatim);
     return Response.json({ mode: "live", visitNote });
   } catch (err) {
     const message = err instanceof Error ? err.message : "structuring_failed";

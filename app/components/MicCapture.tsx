@@ -10,11 +10,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { VisitLanguage } from "../lib/schema";
+import { VisitLanguage, Cohort } from "../lib/schema";
 import { MOCK_SAMPLES } from "../lib/mockData";
 import { useVoiceCapture } from "../lib/useVoiceCapture";
 
 interface Props {
+  cohort: Cohort;
   onStructure: (args: {
     transcript: string;
     language: VisitLanguage;
@@ -34,12 +35,15 @@ const SOURCE_HINT: Record<string, string> = {
   mock: "डेमो मोड — नीचे सैंपल चुनें",
 };
 
-export default function MicCapture({ onStructure, busy }: Props) {
+export default function MicCapture({ cohort, onStructure, busy }: Props) {
   const [transcript, setTranscript] = useState("");
   const [language, setLanguage] = useState<VisitLanguage>("hi-en");
   const [sampleId, setSampleId] = useState<string | undefined>(undefined);
   const taRef = useRef<HTMLTextAreaElement>(null);
   const voice = useVoiceCapture(language);
+
+  // Only show demo samples for the cohort being logged.
+  const samples = MOCK_SAMPLES.filter((s) => s.cohort === cohort);
 
   const recording = voice.status === "recording";
   const transcribing = voice.status === "transcribing";
@@ -153,7 +157,7 @@ export default function MicCapture({ onStructure, busy }: Props) {
 
       <div className="aa-samples">
         <div className="aa-samples-head">Demo samples (mock)</div>
-        {MOCK_SAMPLES.map((s) => (
+        {samples.map((s) => (
           <button
             key={s.id}
             type="button"

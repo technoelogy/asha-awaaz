@@ -1,0 +1,186 @@
+/* ASHA Awaaz — PHC dashboard styles. Scoped under .phc-root. */
+
+.phc-root {
+  --bg: #f6f7f4;
+  --surface: #ffffff;
+  --ink: #15201a;
+  --muted: #5c6b60;
+  --line: #e1e6db;
+  --brand: #15803d;
+  --brand-ink: #0c4524;
+  --warn: #b45309;
+  --warn-bg: #fff7ed;
+  --info: #3f6212;
+  --info-bg: #f0f6ec;
+
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.phc-shell {
+  width: min(100% - 48px, 980px);
+  margin-inline: auto;
+  padding: 28px 0 64px;
+}
+
+.phc-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.phc-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+}
+.phc-sub {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.phc-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.phc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.phc-chip[data-state="live"] { color: var(--brand-ink); border-color: #bfe3c8; background: #eefaf0; }
+.phc-chip[data-state="error"] { color: #b91c1c; border-color: #f0c9c9; background: #fdf1f1; }
+.phc-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+.phc-btn {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--brand-ink);
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 7px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.phc-btn:hover { border-color: var(--brand); }
+
+/* --- summary tiles --- */
+.phc-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+@media (max-width: 640px) {
+  .phc-tiles { grid-template-columns: repeat(2, 1fr); }
+}
+.phc-tile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+}
+.phc-tile-value { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.phc-tile-label { margin-top: 6px; font-size: 0.82rem; color: var(--muted); }
+.phc-tile[data-tone="warn"] .phc-tile-value { color: var(--warn); }
+.phc-tile[data-tone="info"] .phc-tile-value { color: var(--info); }
+
+/* --- table --- */
+.phc-tablewrap {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.phc-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.phc-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcf9;
+}
+.phc-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.phc-table tbody tr:last-child td { border-bottom: 0; }
+.phc-table tbody tr[data-risk="true"] { background: #fffaf3; }
+.phc-table tbody tr[data-danger="true"] {
+  background: #fdecec;
+  box-shadow: inset 3px 0 0 #c0392b;
+}
+.phc-name { font-weight: 600; }
+.phc-muted { color: var(--muted); }
+
+.phc-danger-cell { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+
+.phc-pill {
+  display: inline-block;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 7px;
+  background: var(--info-bg);
+  color: var(--info);
+}
+.phc-pill[data-tone="ok"] { background: #eefaf0; color: var(--brand-ink); }
+.phc-pill[data-tone="warn"] { background: #fde9cf; color: var(--warn); }
+.phc-pill[data-tone="info"] { background: var(--info-bg); color: var(--info); }
+.phc-pill[data-tone="danger"] { background: #fbdcdc; color: #c0392b; }
+
+.phc-empty {
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+.phc-empty a { color: var(--brand-ink); }
+
+.phc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+.phc-footer a { color: var(--brand-ink); text-decoration: underline; }
+
+/* cohort badge */
+.phc-cohort {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.phc-cohort[data-cohort="pregnant"] { background: #eaf4ff; color: #1e5a9e; }
+.phc-cohort[data-cohort="adolescent"] { background: #f3eaff; color: #6b3fa0; }

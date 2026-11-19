@@ -6,15 +6,17 @@
 import { useEffect, useState } from "react";
 import MicCapture from "./components/MicCapture";
 import VisitNoteConfirm from "./components/VisitNoteConfirm";
-import { VisitNote, VisitLanguage } from "./lib/schema";
+import CohortPicker from "./components/CohortPicker";
+import { VisitNote, VisitLanguage, Cohort } from "./lib/schema";
 import { structureTranscript } from "./lib/client";
 import { enqueue, pendingCount, isOnline, drain } from "./lib/queue";
 import { speak, readBackSentence, stopSpeaking } from "./lib/voice";
 
-type Stage = "capture" | "structuring" | "confirm" | "saved";
+type Stage = "picker" | "capture" | "structuring" | "confirm" | "saved";
 
 export default function AshaAwaazApp() {
-  const [stage, setStage] = useState<Stage>("capture");
+  const [stage, setStage] = useState<Stage>("picker");
+  const [cohort, setCohort] = useState<Cohort>("pregnant");
   const [note, setNote] = useState<VisitNote | null>(null);
   const [mode, setMode] = useState<"mock" | "live">("mock");
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +40,12 @@ export default function AshaAwaazApp() {
     };
   }, []);
 
+  function pickCohort(c: Cohort) {
+    setCohort(c);
+    setError(null);
+    setStage("capture");
+  }
+
   async function handleStructure(args: {
     transcript: string;
     language: VisitLanguage;
@@ -46,7 +54,7 @@ export default function AshaAwaazApp() {
     setError(null);
     setStage("structuring");
     try {
-      const { visitNote, mode } = await structureTranscript(args);
+      const { visitNote, mode } = await structureTranscript({ ...args, cohort });
       setNote(visitNote);
       setMode(mode);
       setStage("confirm");
@@ -69,11 +77,20 @@ export default function AshaAwaazApp() {
     setStage("saved");
   }
 
+  // "फिर से बोलें" — re-capture for the SAME beneficiary cohort.
   function reset() {
     stopSpeaking();
     setNote(null);
     setError(null);
     setStage("capture");
+  }
+
+  // "+ नई विज़िट" — new beneficiary, choose who it's for again.
+  function startNew() {
+    stopSpeaking();
+    setNote(null);
+    setError(null);
+    setStage("picker");
   }
 
   return (
@@ -100,9 +117,24 @@ export default function AshaAwaazApp() {
           </div>
         </div>
 
+        {stage === "picker" && <CohortPicker onPick={pickCohort} />}
+
         {stage === "capture" && (
           <>
-            <MicCapture onStructure={handleStructure} busy={false} />
+            <button
+              type="button"
+              className="aa-btn aa-btn-sm"
+              data-variant="ghost"
+              style={{ alignSelf: "flex-start", marginBottom: 4 }}
+              onClick={startNew}
+            >
+              ← किसके लिए बदलें
+            </button>
+            <MicCapture
+              cohort={cohort}
+              onStructure={handleStructure}
+              busy={false}
+            />
             {error && <p className="aa-error">{error}</p>}
           </>
         )}
@@ -145,7 +177,7 @@ export default function AshaAwaazApp() {
             >
               🔊 दोबारा सुनें
             </button>
-            <button type="button" className="aa-btn" onClick={reset}>
+            <button type="button" className="aa-btn" onClick={startNew}>
               + नई विज़िट
             </button>
           </div>
@@ -156,6 +188,10 @@ export default function AshaAwaazApp() {
           India&apos;s ASHA workers.
           <br />
           Synthetic data only · structured record is the source of truth.
+          <br />
+          <a href="/dashboard" style={{ color: "var(--aa-brand-ink)" }}>
+            PHC Dashboard →
+          </a>
         </p>
       </div>
     </div>

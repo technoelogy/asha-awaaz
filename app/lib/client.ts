@@ -1,7 +1,7 @@
 // ASHA Awaaz — client-side helper to call the structuring route.
 "use client";
 
-import { VisitNote, VisitLanguage } from "./schema";
+import { VisitNote, VisitLanguage, Cohort } from "./schema";
 
 export interface StructureResult {
   mode: "mock" | "live";
@@ -11,6 +11,7 @@ export interface StructureResult {
 export async function structureTranscript(params: {
   transcript: string;
   language: VisitLanguage;
+  cohort: Cohort;
   mockSampleId?: string;
 }): Promise<StructureResult> {
   const res = await fetch("/api/structure", {

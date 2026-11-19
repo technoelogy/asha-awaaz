@@ -85,7 +85,7 @@ export async function GET() {
 
   try {
     const res = await fetch(
-      `${cfg.url}/rest/v1/visit_notes?select=id,created_at,beneficiary_name,gestational_week,bp_status,iron_compliance,follow_up_needed&order=created_at.desc&limit=100`,
+      `${cfg.url}/rest/v1/visit_notes?select=id,created_at,beneficiary_name,gestational_week,bp_status,iron_compliance,follow_up_needed,record&order=created_at.desc&limit=100`,
       { headers: { apikey: cfg.key, authorization: `Bearer ${cfg.key}` } },
     );
     if (!res.ok) {
