@@ -20,7 +20,7 @@
   background: var(--aa-bg);
   color: var(--aa-ink);
   font-family:
-    system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans",
+    "Mukta", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans",
     "Noto Sans Devanagari", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -48,6 +48,7 @@
 .aa-wordmark span {
   color: var(--aa-danger);
 }
+.aa-wordmark .aa-q { font-family: Georgia, serif; font-size: 1.2em; line-height: 0; position: relative; top: 0.1em; }
 .aa-tagline {
   font-size: 0.78rem;
   color: var(--aa-muted);

@@ -9,6 +9,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import "@fontsource/mukta/400.css";
+import "@fontsource/mukta/600.css";
+import "@fontsource/mukta/800.css";
 import "./dashboard.css";
 
 type Cohort = "pregnant" | "adolescent";

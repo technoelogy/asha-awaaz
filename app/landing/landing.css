@@ -12,10 +12,9 @@
   --muted: #4d5d6c;
   --sindoor: #ca2325;
   --sindoor-soft: #f6dcd6;
-  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Noto Serif",
-    "Noto Serif Devanagari", serif;
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari",
-    Arial, sans-serif;
+  --serif: "Tiro Devanagari Hindi", "Iowan Old Style", Georgia, "Noto Serif Devanagari", serif;
+  --sans: "Mukta", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Devanagari", Arial,
+    sans-serif;
 
   position: relative;
   min-height: 100dvh;
@@ -26,11 +25,13 @@
   -webkit-font-smoothing: antialiased;
 }
 .ln-root a { color: inherit; }
-.ln-root em { font-style: italic; color: var(--sindoor); }
+.ln-root em { font-style: italic; color: #2f6690; }
+.ln-root em.ln-red, .ln-h1 em { color: var(--sindoor); }
 
 /* ── watermark motif ── */
+.ln-fold { position: relative; overflow: hidden; }
 .ln-watermark {
-  position: fixed;
+  position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
@@ -45,7 +46,7 @@
   line-height: 1;
   white-space: nowrap;
   color: var(--prussian);
-  opacity: 0.045;
+  opacity: 0.028;
   transform: translateX(-4%);
 }
 .ln-watermark span:nth-child(even) { transform: translateX(-30%); }
@@ -101,8 +102,8 @@
 .ln-h1 {
   margin: 0;
   font-family: var(--serif);
-  font-weight: 700;
-  font-size: clamp(2.3rem, 7.2vw, 4.6rem);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 7.6vw, 5rem);
   line-height: 1.02;
   letter-spacing: -0.02em;
   color: var(--prussian);
@@ -150,10 +151,10 @@
 .ln-section-dark, .ln-section-tint { width: 100%; padding-inline: max(16px, calc((100% - 1160px) / 2)); }
 .ln-section-dark { background: var(--prussian); color: var(--cream); }
 .ln-section-dark .ln-h2, .ln-section-dark .ln-kicker { color: var(--cream); }
-.ln-section-dark em { color: #ff8a7a; }
+.ln-section-dark em { color: #9cc3e4; }
 .ln-section-tint { background: color-mix(in srgb, var(--cream-2) 82%, transparent); }
 .ln-kicker { margin: 0 0 10px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--sindoor); }
-.ln-h2 { margin: 0 0 28px; font-family: var(--serif); font-size: clamp(1.8rem, 4.6vw, 3rem); line-height: 1.08; letter-spacing: -0.015em; color: var(--prussian); }
+.ln-h2 { margin: 0 0 28px; font-weight: 400; font-family: var(--serif); font-size: clamp(1.8rem, 4.6vw, 3rem); line-height: 1.08; letter-spacing: -0.015em; color: var(--prussian); }
 .ln-root h3 { margin: 0 0 6px; font-size: 1.05rem; }
 
 /* story */
@@ -162,7 +163,7 @@
 .ln-stats { margin-top: 40px; display: grid; gap: 14px; }
 @media (min-width: 760px) { .ln-stats { grid-template-columns: repeat(3, 1fr); } }
 .ln-stat { display: grid; gap: 6px; padding: 22px; border-radius: 18px; background: var(--prussian); color: var(--cream); }
-.ln-stat-n { font-family: var(--serif); font-size: clamp(2.4rem, 6vw, 3.2rem); line-height: 1; font-weight: 700; }
+.ln-stat-n { font-family: var(--serif); font-size: clamp(2.6rem, 6vw, 3.4rem); line-height: 1; font-weight: 400; }
 .ln-stat:nth-child(2) .ln-stat-n { color: #ff8a7a; }
 .ln-stat-l { font-size: 0.95rem; line-height: 1.45; color: #d6e1ec; }
 .ln-src { font-size: 0.72rem; color: #9fb6cb !important; text-underline-offset: 3px; }
@@ -216,7 +217,7 @@
 .ln-close-hi { margin: 0; font-family: var(--serif); font-size: clamp(2.4rem, 8vw, 5rem); line-height: 1.05; color: #fff; }
 .ln-close-en { margin: 10px 0 26px; font-family: var(--serif); font-style: italic; font-size: clamp(1.1rem, 3vw, 1.5rem); color: #d6e1ec; }
 .ln-close-line { margin: 0 0 28px; font-size: clamp(1.05rem, 2.6vw, 1.3rem); font-weight: 700; letter-spacing: 0.01em; }
-.ln-close-line em { color: #ff8a7a; }
+.ln-close-line em { color: #ffb3a8; }
 .ln-close-sub { margin: 22px 0 0; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: #9fb6cb; }
 
 /* footer */
@@ -306,4 +307,38 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ln-waves path, .ln-card, .ln-mic-dot, .ln-bars i, .ln-spinner, .ln-skel i { animation: none; }
+}
+
+/* ── v3: brand bar, fonts, watermark, walk-in ── */
+.ln-root { font-size: 17px; }
+.ln-brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; min-width: 0; }
+.ln-logo { font-family: var(--sans); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.01em; }
+.ln-logo span { color: inherit; }
+.ln-logo .ln-q { font-family: var(--serif); color: var(--sindoor); font-size: 1.25em; line-height: 0; position: relative; top: 0.12em; }
+.ln-brand-line { padding-left: 14px; border-left: 1.5px solid color-mix(in srgb, var(--prussian) 25%, transparent); font-family: var(--serif); font-size: 1.3rem; color: var(--prussian); white-space: nowrap; }
+@media (max-width: 640px) {
+  .ln-brand { flex-direction: column; gap: 0; }
+  .ln-brand-line { padding-left: 0; border-left: 0; font-size: 1.05rem; color: var(--sindoor); }
+}
+.ln-h1 { margin-top: 8px; }
+.ln-h1 em { font-size: 0.5em; margin-top: 12px; }
+.ln-h2 em { font-weight: 400; }
+.ln-root h3, .ln-col h3, .ln-map-col h3 { font-weight: 600; }
+.ln-col h3, .ln-map-col h3 { font-weight: 400; }
+.ln-close { position: relative; overflow: hidden; }
+.ln-close > *:not(.ln-watermark) { position: relative; z-index: 1; }
+.ln-watermark-dark span { color: #fff; opacity: 0.04; }
+.ln-close-hi, .ln-close-en { font-weight: 400; }
+
+/* ASHA walks from her bicycle to the doorstep, then speaks */
+.ln-asha { animation: ln-walk 2.8s cubic-bezier(.35,.55,.4,1) 0.3s both; }
+.ln-asha-bob { animation: ln-bob 0.35s ease-in-out 0.3s 8 alternate both; }
+@keyframes ln-walk { from { transform: translateX(-150px); } to { transform: translateX(0); } }
+@keyframes ln-bob { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+.ln-waves-in { animation: ln-appear .4s ease 3.1s both; }
+.ln-card-in { animation: ln-rise .6s ease 3.7s both; }
+@keyframes ln-appear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ln-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .ln-asha, .ln-asha-bob, .ln-waves-in, .ln-card-in { animation: none; }
 }

@@ -1,11 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import "@fontsource/tiro-devanagari-hindi/400.css";
+import "@fontsource/tiro-devanagari-hindi/400-italic.css";
+import "@fontsource/mukta/400.css";
+import "@fontsource/mukta/600.css";
+import "@fontsource/mukta/800.css";
 import "./landing/landing.css";
 import HeroIllustration from "./landing/HeroIllustration";
 import PhoneDemo from "./landing/PhoneDemo";
 
 export const metadata: Metadata = {
-  title: "ASHA Awaaz | Swasth Nari, Sashakt Bharat",
+  title: "ASHA Awaaz | स्वस्थ नारी, सशक्त भारत",
   description:
     "Voice-first visit logging for India's ASHA workers. She speaks the visit in her own language; it becomes a structured record in the fields the health system already tracks, and a danger sign reaches the PHC the same day.",
 };
@@ -29,7 +34,7 @@ const MOTIF: { lang: string; text: string }[] = [
   { lang: "pa", text: "ਸਿਹਤਮੰਦ ਨਾਰੀ, ਸਸ਼ਕਤ ਭਾਰਤ" },
   { lang: "or", text: "ସୁସ୍ଥ ନାରୀ, ସଶକ୍ତ ଭାରତ" },
   { lang: "ur", text: "صحت مند عورت، مضبوط بھارت" },
-  { lang: "en", text: "A healthy woman, a stronger India" },
+  { lang: "en", text: "A healthy woman, a stronger Bharat" },
 ];
 
 type Status = "live" | "next" | "pilot" | "scale";
@@ -134,63 +139,66 @@ const SYSTEM: {
 export default function Home() {
   return (
     <div className="ln-root">
-      {/* watermark motif, fixed behind the whole page */}
-      <div className="ln-watermark" aria-hidden="true">
-        {MOTIF.map((m) => (
-          <span key={m.lang} lang={m.lang}>
-            {m.text}
-          </span>
-        ))}
-      </div>
-
-      <header className="ln-nav">
-        <Link href="/" className="ln-logo">
-          ASHA <span>Awaaz</span>
-        </Link>
-        <nav className="ln-nav-links">
-          <Link href="/dashboard" title="Primary Health Centre dashboard">
-            Health centre view
-          </Link>
-          <Link href="/visit" className="ln-btn ln-btn-sm">
-            Try it live →
-          </Link>
-        </nav>
-      </header>
-
-      {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="ln-hero">
-        <div className="ln-hero-copy">
-          <p className="ln-eyebrow">
-            <span lang="hi">स्वस्थ नारी, सशक्त भारत</span>
-          </p>
-          <h1 className="ln-h1">
-            ASHA Awaaz
-            <br />
-            <em>for a healthy woman, a stronger India.</em>
-          </h1>
-          <p className="ln-lede">
-            India&apos;s 10 lakh+ ASHA workers visit pregnant women at their
-            doorstep. ASHA Awaaz lets her log that visit <b>by speaking</b>, in
-            Hindi, Hinglish or her own dialect. The record, and any danger sign,
-            reaches the Primary Health Centre (PHC) the same day.
-          </p>
-          <div className="ln-cta-row">
-            <Link href="/visit" className="ln-btn">
-              Try the live demo →
+      <div className="ln-fold">
+        <div className="ln-watermark" aria-hidden="true">
+          {MOTIF.map((m) => (
+            <span key={m.lang} lang={m.lang}>
+              {m.text}
+            </span>
+          ))}
+        </div>
+        <header className="ln-nav">
+          <div className="ln-brand">
+            <Link href="/" className="ln-logo" aria-label="ASHA Awaaz home">
+              ASHA <span className="ln-q">‘</span>Awaaz
+              <span className="ln-q">’</span>
             </Link>
-            <a href="#how" className="ln-btn ln-btn-ghost">
-              See how it works
-            </a>
+            <span className="ln-brand-line" lang="hi">
+              स्वस्थ नारी, सशक्त भारत
+            </span>
           </div>
-        </div>
-        <div className="ln-illus-wrap">
-          <HeroIllustration />
-          <p className="ln-illus-cap">
-            <b>ASHA</b> = Accredited Social Health Activist, the village health
-            worker. <b>Awaaz</b> = voice.
-          </p>
-        </div>
-      </section>
+          <nav className="ln-nav-links">
+            <Link href="/dashboard" title="Primary Health Centre dashboard">
+              Health centre view
+            </Link>
+            <Link href="/visit" className="ln-btn ln-btn-sm">
+              Try it live →
+            </Link>
+          </nav>
+        </header>
+
+        {/* ── HERO ─────────────────────────────────────────── */}
+        <section className="ln-hero">
+          <div className="ln-hero-copy">
+            <h1 className="ln-h1">
+              ASHA Awaaz
+              <br />
+              <em>for a healthy woman, a stronger Bharat.</em>
+            </h1>
+            <p className="ln-lede">
+              India&apos;s 10 lakh+ ASHA workers visit pregnant women at their
+              doorstep. ASHA Awaaz lets her log that visit <b>by speaking</b>,
+              in Hindi, Hinglish or her own dialect. The record, and any danger
+              sign, reaches the Primary Health Centre (PHC) the same day.
+            </p>
+            <div className="ln-cta-row">
+              <Link href="/visit" className="ln-btn">
+                Try the live demo →
+              </Link>
+              <a href="#how" className="ln-btn ln-btn-ghost">
+                See how it works
+              </a>
+            </div>
+          </div>
+          <div className="ln-illus-wrap">
+            <HeroIllustration />
+            <p className="ln-illus-cap">
+              <b>ASHA</b> = Accredited Social Health Activist, the village
+              health worker. <b>Awaaz</b> = voice.
+            </p>
+          </div>
+        </section>
+      </div>
 
       {/* ── PROBLEM: TODAY vs WITH ─────────────────────────── */}
       <section className="ln-section">
@@ -198,7 +206,7 @@ export default function Home() {
         <h2 className="ln-h2">
           She hears the danger sign at the door.
           <br />
-          <em>The health centre hears it days later.</em>
+          <em className="ln-red">The health centre hears it days later.</em>
         </h2>
         <div className="ln-compare">
           <div className="ln-col ln-col-today">
@@ -373,10 +381,17 @@ export default function Home() {
 
       {/* ── CLOSE ────────────────────────────────────────── */}
       <section className="ln-close">
+        <div className="ln-watermark ln-watermark-dark" aria-hidden="true">
+          {MOTIF.slice(1, 5).map((m) => (
+            <span key={m.lang} lang={m.lang}>
+              {m.text}
+            </span>
+          ))}
+        </div>
         <p className="ln-close-hi" lang="hi">
           स्वस्थ नारी, सशक्त भारत
         </p>
-        <p className="ln-close-en">A healthy woman, a stronger India.</p>
+        <p className="ln-close-en">A healthy woman, a stronger Bharat.</p>
         <p className="ln-close-line">
           Built for impact. <em>Built for a greater Bharat.</em>
         </p>

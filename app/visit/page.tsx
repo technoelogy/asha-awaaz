@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import AshaAwaazApp from "../AshaAwaazApp";
+import "@fontsource/mukta/400.css";
+import "@fontsource/mukta/600.css";
+import "@fontsource/mukta/800.css";
 import "../asha-awaaz.css";
 
 export const metadata: Metadata = {
