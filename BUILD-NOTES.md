@@ -18,7 +18,8 @@ Submission closes **Mon 30 Nov, 11:59 pm IST** · Our target: **Sun 29 Nov night
 | 5 | **Home page** (`/`), app moved to **`/visit`**, health centre view at `/dashboard` | asha-awaaz.vercel.app |
 | 6 | **Brand system**: 60-30-10 Ricotta Cream / Prussian Blue / Sindoor `#CA2325`; fonts Tiro Devanagari Hindi (headlines) + Mukta (body), self-hosted so Docker works offline | All three surfaces themed |
 | 7 | **Security**: RLS enabled on `visit_notes` (no policies; server key bypasses) | Supabase: "RLS enabled, no policies" |
-| 8 | **Repo public**: github.com/technoelogy/asha-awaaz; root tidied, reference docs in `docs/` | Repo shows *Public* |
+| 8 | **Keys rotated** (Anthropic + Supabase) after exposure in a screenshot; Vercel updated + redeployed; env values now trimmed in code | `/api/visits` → `mode: live` on new keys |
+| 9 | **Repo public**: github.com/technoelogy/asha-awaaz; root tidied, reference docs in `docs/` | Repo shows *Public* |
 
 ### Home page — what's on it
 - **First fold** (fits one screen, 360 px phone → 1920 px monitor): ASHA Awaaz | स्वस्थ नारी, सशक्त भारत · "for a healthy woman, a stronger Bharat" · one-line explainer · doorstep illustration (ASHA walks from her bicycle to the door, speaks, "Visit logged · PHC alerted" card rises).
@@ -85,6 +86,8 @@ Output: one results line for the deck, e.g. "15 live voice tests across 3 input 
 | Public repo, starts with no keys | Claude | — | ✅ Done |
 | Live link | Claude | — | ✅ Done |
 | Supabase in production + RLS | Tron + Claude | — | ✅ Done |
+| Key rotation (Anthropic, Supabase) | Tron | — | ✅ Done 27 Nov |
+| Sarvam API key saved to `.env.local` | Tron | — | ✅ Done (not yet in Vercel) |
 | Home page | Claude | — | ✅ Done |
 | Translations check (Kannada first) | Tron | Sun 29, 2 pm | ⏳ Sent to groups. Unconfirmed lines get removed. |
 | Voice test (above) | Tron + Claude | Sat 28, 11 am | ⏳ Scheduled |
