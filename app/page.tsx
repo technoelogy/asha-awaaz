@@ -402,8 +402,8 @@ export default function Home() {
 
       <footer className="ln-foot">
         <p>
-          ASHA Awaaz · a technoelogy.com build for Scaler × Wispr Flow, Build
-          for Bharat · Synthetic data only
+          ASHA Awaaz · built by Noel Gomes, technoelogy.com · for Scaler × Wispr
+          Flow, Build for Bharat · Synthetic data only
         </p>
         <p className="ln-foot-src">
           Sources:{" "}
