@@ -1,0 +1,18 @@
+# Start ASHA Awaaz with one command:
+#   docker compose up --build
+# Then open http://localhost:3000
+#
+# No keys needed. Without keys the app runs on built-in demo samples.
+# To enable live AI structuring or persistence, set these in your shell
+# (or a .env file next to this one) before running compose.
+services:
+  asha-awaaz:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ASHA_MODEL: ${ASHA_MODEL:-claude-haiku-4-5}
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY:-}
+    restart: unless-stopped

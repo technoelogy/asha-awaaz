@@ -1,62 +1,73 @@
 # ASHA Awaaz
 
-Voice-first visit logging for India's ASHA workers. She speaks her post-visit
-note in Hindi or Hinglish; it becomes a structured record she confirms by ear.
-She never types.
+**Swasth Nari, Sashakt Bharat.** Voice-first visit logging for India's ASHA workers.
 
-Built for the Scaler × Wispr **Build for Bharat** hackathon.
+An ASHA worker speaks a home-visit note in Hindi, Hinglish or Bhojpuri-accented
+Hindi. The app turns it into a structured record, reads it back for her to
+confirm by ear, flags danger signs for a PHC referral, and shows the visit on
+a PHC dashboard. She never fills an English form.
 
-## The P1 path
+Built for the Scaler × Wispr **Build for Bharat** hackathon · Theme: **Healthcare access**.
 
-```
-Voice (Hindi/Hinglish)  →  structuring (Claude Haiku)  →  visit-note JSON  →  voice confirm-and-correct
-```
-
-No datastore, no dashboard in P1 — the structured record is the single source
-of truth; everything downstream is a rendering of it.
-
-## Run it
+## Start it (one command, no keys needed)
 
 ```bash
-npm install
-npm run dev          # → http://localhost:3000  (mock mode, no API key needed)
+docker compose up --build
 ```
 
-Mock mode is the default: the three demo samples run through the real
-structuring guardrails with no network and no key. To enable the live model:
+Open **http://localhost:3000**.
 
-```bash
-cp .env.example .env.local
-# set ANTHROPIC_API_KEY and ASHA_MODEL in .env.local, then:
-npm run dev
-```
+Without any keys the app runs fully on built-in demo samples and shows an
+"AI key not set" note. Nothing breaks.
 
-## What's inside
+Without Docker: `npm install && npm run dev`.
 
-| Path | Role |
+## Try the core flow (about 1 minute)
+
+1. Tap **गर्भवती महिला** (pregnant woman).
+2. Under *Demo samples*, tap **Bhojpuri accent · HIGH-RISK**.
+3. Tap **समझें और जाँचें**. The structured record appears.
+4. See the red banner: severe headache + blurred vision → **refer to PHC**.
+5. Tap **🔊 सुनें** to hear the Hindi read-back. Tap **पुष्टि करें और सेव करें**.
+6. Open **PHC Dashboard** (footer link) to see the visit flagged.
+
+Also try **किशोरी (10–19)** → *HIGH-RISK · severe anaemia* for the adolescent-girl flow.
+
+## Optional: go live
+
+Set any of these before `docker compose up` (shell or a `.env` file):
+
+| Variable | Enables |
 |---|---|
-| `app/page.tsx` + `app/AshaAwaazApp.tsx` | PWA shell + capture → confirm → queue state machine |
-| `app/components/MicCapture.tsx` | voice capture (Wispr dictates into the focused field) + demo samples |
-| `app/components/VisitNoteConfirm.tsx` | voice read-back; only unclear fields are re-asked, one at a time |
-| `app/api/structure/route.ts` | structuring endpoint — mock-first, live via Anthropic Messages API |
-| `app/lib/schema.ts` | frozen visit-note schema (v1.0) |
-| `app/lib/validator.ts` | in-code guardrails — unstated/implausible values become `null`, never guessed |
-| `app/lib/voice.ts` | Hindi text-to-speech read-back |
-| `app/lib/queue.ts` | offline localStorage queue for low-connectivity field use |
+| `ANTHROPIC_API_KEY` | Live AI structuring of your own speech (Claude Haiku) |
+| `SUPABASE_URL` + `SUPABASE_SERVICE_KEY` | Saved visits persist (run `supabase-schema.sql` first) |
 
-## The guardrail that matters
+Voice capture uses the browser's speech recognition (Chrome). Use it on
+`localhost` or HTTPS.
 
-A clinical value is **never inferred**. Anything the ASHA worker did not
-clearly state resolves to `null`; anything the model flags uncertain is
-surfaced for her to confirm or correct — one field at a time, never a restart.
-This is enforced in code (`validator.ts`), not left to the prompt.
+## How it works
 
-## Visit-note fields (v1)
+```
+Voice (Hindi / Hinglish)
+  → structuring (Claude Haiku, temperature 0)
+  → in-code validator (never-guess guardrail)
+  → visit-note JSON (single source of truth)
+  → voice read-back + confirm-and-correct
+  → save → PHC dashboard
+```
 
-name · age · gestational week · BP status · iron-tablet compliance · follow-up
-needed — each with a per-field confidence and an `uncertain_fields` list that
-drives the confirm-and-correct screen.
+**Never-guess guardrail.** If something wasn't said, the field stays blank and
+is asked again. Values that don't fit the allowed options or ranges become
+blank too. The model structures speech; it never fills in clinical values.
 
-## Roadmap (not in P1)
+## Project layout
 
-Supabase datastore · PHC dashboard · service-worker offline shell · Marathi.
+- `app/lib/schema.ts` — visit-note schema (pregnant + adolescent cohorts)
+- `app/lib/validator.ts` — guardrails applied to model output
+- `app/lib/structurePrompt.ts` — structuring prompts per cohort
+- `app/components/` — cohort picker, mic capture, confirm screen
+- `app/api/` — structure, visits, status, transcribe routes
+- `app/dashboard/` — PHC dashboard
+- `docs/` — manifesto and build handbook
+
+Synthetic data only. No real patient data.

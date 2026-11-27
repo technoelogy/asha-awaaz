@@ -22,6 +22,24 @@ export default function AshaAwaazApp() {
   const [error, setError] = useState<string | null>(null);
   const [online, setOnline] = useState(true);
   const [pending, setPending] = useState(0);
+  const [keyNotSet, setKeyNotSet] = useState(false);
+
+  // Which services are configured. Without an AI key the app still runs on
+  // built-in demo samples, and says so instead of failing.
+  useEffect(() => {
+    let active = true;
+    fetch("/api/status", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((s: { structuring?: string }) => {
+        if (!active) return;
+        setMode(s.structuring === "live" ? "live" : "mock");
+        setKeyNotSet(s.structuring !== "live");
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Network awareness + queue drain on reconnect.
   useEffect(() => {
@@ -116,6 +134,13 @@ export default function AshaAwaazApp() {
             )}
           </div>
         </div>
+
+        {keyNotSet && (stage === "picker" || stage === "capture") && (
+          <p className="aa-keynote" role="status">
+            AI key not set: the built-in demo samples work fully. To structure
+            your own speech, set <code>ANTHROPIC_API_KEY</code> (see README).
+          </p>
+        )}
 
         {stage === "picker" && <CohortPicker onPick={pickCohort} />}
 
