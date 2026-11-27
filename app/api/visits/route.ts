@@ -15,8 +15,8 @@ import { VisitNote } from "../../lib/schema";
 export const runtime = "nodejs";
 
 function config(): { url: string; key: string } | null {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY;
+  const url = process.env.SUPABASE_URL?.trim();
+  const key = process.env.SUPABASE_SERVICE_KEY?.trim();
   if (!url || !key) return null;
   // Accept a bare project ref ("abcd1234") or a full URL.
   let u = url.trim().replace(/\/$/, "");

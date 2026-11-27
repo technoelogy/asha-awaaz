@@ -63,7 +63,7 @@ async function callAnthropic(
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY as string,
+      "x-api-key": (process.env.ANTHROPIC_API_KEY ?? "").trim(),
       "anthropic-version": ANTHROPIC_VERSION,
     },
     body: JSON.stringify({
