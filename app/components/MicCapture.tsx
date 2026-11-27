@@ -16,6 +16,8 @@ import { useVoiceCapture } from "../lib/useVoiceCapture";
 
 interface Props {
   cohort: Cohort;
+  // No AI key: put demo samples first so the main action never looks dead.
+  demoFirst?: boolean;
   onStructure: (args: {
     transcript: string;
     language: VisitLanguage;
@@ -35,7 +37,12 @@ const SOURCE_HINT: Record<string, string> = {
   mock: "डेमो मोड — नीचे सैंपल चुनें",
 };
 
-export default function MicCapture({ cohort, onStructure, busy }: Props) {
+export default function MicCapture({
+  cohort,
+  demoFirst = false,
+  onStructure,
+  busy,
+}: Props) {
   const [transcript, setTranscript] = useState("");
   const [language, setLanguage] = useState<VisitLanguage>("hi-en");
   const [sampleId, setSampleId] = useState<string | undefined>(undefined);
@@ -90,10 +97,34 @@ export default function MicCapture({ cohort, onStructure, busy }: Props) {
       ? "समझ रहे हैं…"
       : "बोलने के लिए टैप करें";
 
+  const samplesBlock = (
+    <div className="aa-samples" data-first={demoFirst}>
+      <div className="aa-samples-head">
+        {demoFirst
+          ? "एक सैंपल चुनिए · Tap a sample to try"
+          : "Demo samples"}
+      </div>
+      {samples.map((s) => (
+        <button
+          key={s.id}
+          type="button"
+          className="aa-sample"
+          data-picked={sampleId === s.id}
+          onClick={() => handleSample(s.id, s.transcript)}
+        >
+          {s.label}
+          <small>{s.transcript}</small>
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div className="aa-card">
       <h1 className="aa-h1">नई विज़िट दर्ज करें</h1>
-      <p className="aa-sub">Log a visit — बस बोलिए, टाइप मत कीजिए।</p>
+      <p className="aa-sub">बस बोलिए, टाइप मत कीजिए।</p>
+
+      {demoFirst && samplesBlock}
 
       <button
         type="button"
@@ -154,21 +185,15 @@ export default function MicCapture({ cohort, onStructure, busy }: Props) {
       >
         {busy ? "समझ रहे हैं…" : "समझें और जाँचें →"}
       </button>
+      {!canStructure && !busy && (
+        <p className="aa-hint">
+          {demoFirst
+            ? "ऊपर एक सैंपल चुनिए, फिर यह बटन चालू होगा।"
+            : "पहले बोलिए या नीचे एक सैंपल चुनिए।"}
+        </p>
+      )}
 
-      <div className="aa-samples">
-        <div className="aa-samples-head">Demo samples (mock)</div>
-        {samples.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            className="aa-sample"
-            onClick={() => handleSample(s.id, s.transcript)}
-          >
-            {s.label}
-            <small>{s.transcript}</small>
-          </button>
-        ))}
-      </div>
+      {!demoFirst && samplesBlock}
     </div>
   );
 }

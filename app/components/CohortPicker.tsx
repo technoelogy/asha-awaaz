@@ -36,33 +36,34 @@ export default function CohortPicker({ onPick }: Props) {
       </p>
 
       <div className="aa-cohorts">
-        {OPTIONS.map((o) => {
-          const live = o.cohort !== null;
-          return (
-            <button
-              key={o.title}
-              type="button"
-              className="aa-cohort"
-              data-live={live}
-              disabled={!live}
-              onClick={() => live && o.cohort && onPick(o.cohort)}
-            >
-              <span className="aa-cohort-emoji" aria-hidden="true">
-                {o.emoji}
-              </span>
-              <span className="aa-cohort-text">
-                <span className="aa-cohort-title">{o.title}</span>
-                <span className="aa-cohort-sub">{o.sub}</span>
-              </span>
-              {!live && <span className="aa-cohort-soon">जल्द</span>}
-            </button>
-          );
-        })}
+        {OPTIONS.filter((o) => o.cohort !== null).map((o) => (
+          <button
+            key={o.title}
+            type="button"
+            className="aa-cohort"
+            data-live="true"
+            onClick={() => o.cohort && onPick(o.cohort)}
+          >
+            <span className="aa-cohort-emoji" aria-hidden="true">
+              {o.emoji}
+            </span>
+            <span className="aa-cohort-text">
+              <span className="aa-cohort-title">{o.title}</span>
+              <span className="aa-cohort-sub">{o.sub}</span>
+            </span>
+            <span className="aa-cohort-go" aria-hidden="true">›</span>
+          </button>
+        ))}
       </div>
 
-      <p className="aa-note">
-        अभी गर्भवती और किशोरी — दोनों का रिकॉर्ड बन सकता है। बाकी जल्द।
-      </p>
+      <div className="aa-soon">
+        <span className="aa-soon-label">जल्द · coming soon</span>
+        {OPTIONS.filter((o) => o.cohort === null).map((o) => (
+          <span key={o.title} className="aa-soon-chip">
+            {o.emoji} {o.title}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

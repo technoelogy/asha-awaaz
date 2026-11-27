@@ -137,8 +137,8 @@ export default function AshaAwaazApp() {
 
         {keyNotSet && (stage === "picker" || stage === "capture") && (
           <p className="aa-keynote" role="status">
-            AI key not set: the built-in demo samples work fully. To structure
-            your own speech, set <code>ANTHROPIC_API_KEY</code> (see README).
+            AI key not set, so demo samples are on. To structure your own
+            speech, set <code>ANTHROPIC_API_KEY</code> (see README).
           </p>
         )}
 
@@ -157,6 +157,7 @@ export default function AshaAwaazApp() {
             </button>
             <MicCapture
               cohort={cohort}
+              demoFirst={keyNotSet}
               onStructure={handleStructure}
               busy={false}
             />

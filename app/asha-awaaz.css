@@ -305,3 +305,101 @@
   line-height: 1.45;
 }
 .aa-keynote code { font-size: 0.78rem; }
+
+/* ===================================================================
+   MOBILE-FIRST PASS
+   The ASHA works on a phone, so the layout is designed at ~400px.
+   On desktop the app stays in a phone-width column.
+   =================================================================== */
+.aa-shell { width: min(100% - 24px, 440px); padding: 16px 0 40px; }
+.aa-card { padding: 16px; border-radius: 16px; }
+.aa-h1 { font-size: 1.2rem; }
+.aa-sub { margin-bottom: 12px; font-size: 0.86rem; }
+
+/* Thumb-sized tap targets (≥44px). */
+.aa-btn { min-height: 48px; margin-top: 10px; }
+.aa-btn-sm { min-height: 44px; padding: 8px 14px; }
+.aa-seg button { min-height: 44px; padding: 8px 16px; }
+
+/* Cohort picker: two big live cards, the roadmap folded into one line. */
+.aa-cohorts { gap: 8px; margin: 10px 0 12px; }
+.aa-cohort { padding: 14px; min-height: 64px; }
+.aa-cohort-go { font-size: 1.6rem; color: var(--aa-muted); line-height: 1; }
+.aa-soon { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.aa-soon-label {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--aa-muted); margin-right: 2px;
+}
+.aa-soon-chip {
+  font-size: 0.74rem; padding: 4px 10px; border-radius: 999px;
+  background: #f1f2ee; color: var(--aa-muted);
+}
+
+/* Capture: samples tighten to two lines; first when no AI key. */
+.aa-samples[data-first="true"] {
+  margin: 0 0 12px; padding: 0 0 12px;
+  border-top: 0; border-bottom: 1px dashed var(--aa-line);
+}
+.aa-sample { padding: 10px 12px; min-height: 48px; }
+.aa-sample small {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.aa-sample[data-picked="true"] { border-color: var(--aa-brand); background: #f1faf3; }
+.aa-mic { padding: 18px 12px; }
+.aa-hint { margin: 6px 0 0; font-size: 0.78rem; color: var(--aa-muted); text-align: center; }
+
+/* Confirm: refer banner first. */
+.aa-refer {
+  display: flex; flex-direction: column; gap: 2px;
+  margin: 0 0 12px; padding: 12px 14px; border-radius: 12px;
+  background: var(--aa-danger); color: #fff;
+}
+.aa-refer strong { font-size: 1rem; }
+.aa-refer span { font-size: 0.86rem; opacity: 0.95; }
+
+/* Confirm: clear fields as a compact two-column grid. */
+.aa-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  margin: 0 0 12px; background: var(--aa-line);
+  border: 1px solid var(--aa-line); border-radius: 12px; overflow: hidden;
+}
+.aa-cell { background: var(--aa-surface); padding: 8px 10px; min-width: 0; }
+.aa-cell dt { font-size: 0.68rem; font-weight: 600; color: var(--aa-muted); }
+.aa-cell dd { margin: 2px 0 0; font-size: 0.92rem; font-weight: 600; overflow-wrap: anywhere; }
+.aa-cell dd[data-empty="true"] { color: var(--aa-muted); font-weight: 500; }
+.aa-fieldlist { margin-bottom: 12px; }
+.aa-fieldrow[data-uncertain="true"] { border-radius: 12px; }
+
+/* Danger rows: compact but tappable. */
+.aa-danger { margin: 0 0 4px; padding: 12px; }
+.aa-danger-row { padding: 6px 0; }
+.aa-danger-name { font-size: 0.86rem; }
+
+/* Confirm: sticky action bar so "save" is always one thumb away. */
+.aa-actions {
+  position: sticky; bottom: 0; z-index: 5;
+  margin: 8px -16px -16px; padding: 10px 16px 14px;
+  background: linear-gradient(to top, var(--aa-surface) 80%, rgba(255,255,255,0));
+  border-radius: 0 0 16px 16px;
+}
+.aa-actions .aa-btn { margin-top: 6px; }
+.aa-actions .aa-btn[data-variant="ghost"] { min-height: 42px; padding: 10px; font-size: 0.9rem; }
+
+.aa-footer { margin-top: 20px; }
+
+/* Mobile pass: unclear field = one tidy card inside the screen. */
+.aa-fieldrow[data-uncertain="true"] {
+  position: relative; display: block;
+  margin: 0 0 10px; padding: 12px;
+  border: 1px solid #f1d9b5; border-radius: 12px;
+}
+.aa-fieldrow[data-uncertain="true"] .aa-badge { position: absolute; top: 12px; right: 12px; }
+.aa-reask { margin-top: 8px; padding: 0; border: 0; background: none; }
+.aa-reask .aa-row + .aa-row { margin-top: 8px; }
+.aa-fixline { display: flex; gap: 8px; margin-top: 8px; }
+.aa-fixline .aa-transcript { flex: 1; min-height: 44px; height: 44px; margin: 0; padding: 10px 12px; }
+.aa-fixline .aa-btn-sm { flex: none; }
+
+/* Odd number of grid cells: last one spans the row (no empty grey cell). */
+.aa-cell:last-child:nth-child(odd) { grid-column: span 2; }

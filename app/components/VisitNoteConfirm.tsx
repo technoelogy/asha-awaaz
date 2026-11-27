@@ -183,9 +183,12 @@ export default function VisitNoteConfirm({
   }
 
   const remaining = note.uncertain_fields.length;
+  const present = presentDangerSigns(note);
+  const unclearFields = fields.filter((f) => uncertain.has(f));
+  const clearFields = fields.filter((f) => !uncertain.has(f));
 
   return (
-    <div className="aa-card">
+    <div className="aa-card aa-confirm">
       <div className="aa-row" style={{ justifyContent: "space-between" }}>
         <h1 className="aa-h1">जाँचिए — सही है?</h1>
         {speechSupported() && (
@@ -205,53 +208,76 @@ export default function VisitNoteConfirm({
           {note.cohort === "adolescent" ? "किशोरी (10–19)" : "गर्भवती (ANC)"}
         </span>{" "}
         {remaining > 0
-          ? `${remaining} बात साफ़ नहीं थी — सिर्फ़ उन्हें ठीक कीजिए।`
-          : "सब साफ़ है। नीचे पुष्टि कीजिए।"}
+          ? `${remaining} बात साफ़ नहीं थी — सिर्फ़ उसे ठीक कीजिए।`
+          : "सब साफ़ है। पुष्टि कीजिए।"}
       </p>
 
-      <ul className="aa-fieldlist">
-        {fields.map((f) => {
-          const isUncertain = uncertain.has(f);
+      {/* Danger first: the referral is the most important thing on screen. */}
+      {present.length > 0 && (
+        <div className="aa-refer" role="alert">
+          <strong>⚠ PHC रेफर कीजिए</strong>
+          <span>
+            {present.map((s) => DANGER_LABEL_HI[s] ?? s).join(" · ")}
+          </span>
+        </div>
+      )}
+
+      {/* Only unclear fields take space: one at a time, with the fixer. */}
+      {unclearFields.length > 0 && (
+        <ul className="aa-fieldlist">
+          {unclearFields.map((f) => {
+            const set = isFieldSet(note, f);
+            return (
+              <li key={f} className="aa-fieldrow" data-uncertain="true">
+                <div style={{ flex: 1 }}>
+                  <div className="aa-fl">{FIELD_LABEL_EN[f]}</div>
+                  <div className="aa-fv" data-empty={!set}>
+                    {set ? fieldValueHi(note, f) : "— नहीं बताया —"}
+                  </div>
+                  <FieldFixer field={f} hasValue={set} apply={apply} />
+                </div>
+                <span className="aa-badge" data-c="unclear">
+                  unclear
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {/* Clear fields: compact two-column grid, read at a glance. */}
+      <dl className="aa-grid">
+        {clearFields.map((f) => {
           const set = isFieldSet(note, f);
           return (
-            <li key={f} className="aa-fieldrow" data-uncertain={isUncertain}>
-              <div style={{ flex: 1 }}>
-                <div className="aa-fl">{FIELD_LABEL_EN[f]}</div>
-                <div className="aa-fv" data-empty={!set}>
-                  {set ? fieldValueHi(note, f) : "— नहीं बताया —"}
-                </div>
-                {isUncertain && (
-                  <FieldFixer field={f} hasValue={set} apply={apply} />
-                )}
-              </div>
-              <span className="aa-badge" data-c={note.field_confidence[f]}>
-                {note.field_confidence[f]}
-              </span>
-            </li>
+            <div key={f} className="aa-cell">
+              <dt>{FIELD_LABEL_EN[f]}</dt>
+              <dd data-empty={!set}>{set ? fieldValueHi(note, f) : "—"}</dd>
+            </div>
           );
         })}
-      </ul>
+      </dl>
 
       <DangerSignsBlock note={note} onChange={onChange} />
 
-      <button type="button" className="aa-btn" onClick={onConfirm}>
-        ✓ पुष्टि करें और सेव करें
-      </button>
-      <button
-        type="button"
-        className="aa-btn"
-        data-variant="ghost"
-        onClick={onRestart}
-      >
-        फिर से बोलें
-      </button>
-
       <p className="aa-note">
-        जो बात नहीं बताई गई वो खाली रहेगी — कुछ भी अंदाज़े से नहीं भरा जाता।
-        <br />
-        Unstated fields stay empty — never guessed (schema v{note.schema_version},
-        clinical inference off).
+        जो बात नहीं बताई गई वो खाली रहेगी, अंदाज़े से कुछ नहीं भरा जाता।
       </p>
+
+      {/* Sticky action bar: confirm is always one thumb-tap away. */}
+      <div className="aa-actions">
+        <button type="button" className="aa-btn" onClick={onConfirm}>
+          ✓ पुष्टि करें और सेव करें
+        </button>
+        <button
+          type="button"
+          className="aa-btn"
+          data-variant="ghost"
+          onClick={onRestart}
+        >
+          फिर से बोलें
+        </button>
+      </div>
     </div>
   );
 }
@@ -273,30 +299,28 @@ function FieldFixer({
 
   return (
     <div className="aa-reask">
-      <div className="aa-row" style={{ justifyContent: "space-between" }}>
-        <strong style={{ fontSize: "0.82rem" }}>जाँचिए / ठीक कीजिए</strong>
+      <div className="aa-row">
+        {hasValue && (
+          <button
+            type="button"
+            className="aa-btn aa-btn-sm"
+            onClick={() => apply(field, null)}
+          >
+            ✓ सही है
+          </button>
+        )}
         {speechSupported() && (
           <button
             type="button"
             className="aa-btn aa-btn-sm"
             data-variant="ghost"
             onClick={() => speak(askFieldSentence(field))}
+            aria-label="Hear the question"
           >
-            🔊 सवाल सुनें
+            🔊 सवाल
           </button>
         )}
       </div>
-
-      {hasValue && (
-        <button
-          type="button"
-          className="aa-btn aa-btn-sm"
-          style={{ marginTop: 8 }}
-          onClick={() => apply(field, null)}
-        >
-          ✓ ऊपर वाला सही है
-        </button>
-      )}
 
       {options && (
         <div className="aa-row" style={{ marginTop: 8, flexWrap: "wrap" }}>
@@ -335,19 +359,18 @@ function FieldFixer({
 
       {isText && (
         <>
-          <textarea
+          <div className="aa-fixline">
+          <input
             className="aa-transcript"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder={
-              field === "name" ? "नाम दोबारा बोलिए (Wispr)…" : "संख्या बोलिए (Wispr)…"
-            }
+            placeholder={field === "name" ? "या सही नाम बोलिए…" : "या संख्या बोलिए…"}
             dir="auto"
+            inputMode={field === "name" ? "text" : "numeric"}
           />
           <button
             type="button"
             className="aa-btn aa-btn-sm"
-            style={{ marginTop: 8 }}
             disabled={!text.trim()}
             onClick={() => {
               apply(field, text.trim());
@@ -356,6 +379,7 @@ function FieldFixer({
           >
             ठीक करें
           </button>
+          </div>
         </>
       )}
     </div>
@@ -403,12 +427,6 @@ function DangerSignsBlock({
           </button>
         )}
       </div>
-
-      {present.length > 0 && (
-        <p className="aa-danger-alert">
-          ⚠ ज़्यादा जोखिम — PHC रेफर कीजिए (high-risk, refer)
-        </p>
-      )}
 
       <ul className="aa-danger-list">
         {signs.map((s) => {
