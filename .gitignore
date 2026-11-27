@@ -31,3 +31,6 @@ next-env.d.ts
 *.tar.gz
 options.png
 *.tar.gz
+
+# private reference notes
+BUILD-NOTES.md
