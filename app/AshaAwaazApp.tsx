@@ -193,7 +193,7 @@ export default function AshaAwaazApp() {
               {online
                 ? "Visit saved. PHC record updated."
                 : "नेटवर्क आते ही अपने-आप भेज दी जाएगी।"}
-              {pending > 0 && ` (${pending} कतार में)`}
+              {!online && pending > 0 && ` (${pending} कतार में)`}
             </p>
             <button
               type="button"
