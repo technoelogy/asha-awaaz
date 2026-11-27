@@ -17,7 +17,11 @@ export const runtime = "nodejs";
 function config(): { url: string; key: string } | null {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_KEY;
-  return url && key ? { url: url.replace(/\/$/, ""), key } : null;
+  if (!url || !key) return null;
+  // Accept a bare project ref ("abcd1234") or a full URL.
+  let u = url.trim().replace(/\/$/, "");
+  if (!/^https?:\/\//.test(u)) u = u.includes(".") ? `https://${u}` : `https://${u}.supabase.co`;
+  return { url: u, key };
 }
 
 // Denormalise a few fields for easy dashboard queries; keep the full record.
