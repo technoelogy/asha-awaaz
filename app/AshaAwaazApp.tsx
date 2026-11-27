@@ -3,6 +3,7 @@
 // correct (voice) -> queue locally. No datastore, no dashboard (deferred).
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import MicCapture from "./components/MicCapture";
 import VisitNoteConfirm from "./components/VisitNoteConfirm";
@@ -116,9 +117,9 @@ export default function AshaAwaazApp() {
       <div className="aa-shell">
         <div className="aa-topbar">
           <div>
-            <div className="aa-wordmark">
+            <Link href="/" className="aa-wordmark" style={{ textDecoration: "none" }}>
               ASHA <span>Awaaz</span>
-            </div>
+            </Link>
             <div className="aa-tagline">बोलिए, लिखना नहीं · voice visit log</div>
           </div>
           <div className="aa-row">

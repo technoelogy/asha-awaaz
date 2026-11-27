@@ -1,17 +1,17 @@
 /* ASHA Awaaz — PHC dashboard styles. Scoped under .phc-root. */
 
 .phc-root {
-  --bg: #f6f7f4;
+  --bg: #f4ede1;
   --surface: #ffffff;
-  --ink: #15201a;
-  --muted: #5c6b60;
-  --line: #e1e6db;
-  --brand: #15803d;
-  --brand-ink: #0c4524;
+  --ink: #0b2238;
+  --muted: #4d5d6c;
+  --line: #e2d5bf;
+  --brand: #003153;
+  --brand-ink: #002640;
   --warn: #b45309;
   --warn-bg: #fff7ed;
-  --info: #3f6212;
-  --info-bg: #f0f6ec;
+  --info: #003153;
+  --info-bg: #e8f0f6;
 
   min-height: 100dvh;
   background: var(--bg);
@@ -64,8 +64,8 @@
   color: var(--muted);
   white-space: nowrap;
 }
-.phc-chip[data-state="live"] { color: var(--brand-ink); border-color: #bfe3c8; background: #eefaf0; }
-.phc-chip[data-state="error"] { color: #b91c1c; border-color: #f0c9c9; background: #fdf1f1; }
+.phc-chip[data-state="live"] { color: var(--brand-ink); border-color: #b9cddd; background: #e8f0f6; }
+.phc-chip[data-state="error"] { color: #ca2325; border-color: #f0c9c9; background: #fdf1f1; }
 .phc-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 
 .phc-btn {
@@ -146,7 +146,7 @@
   background: var(--info-bg);
   color: var(--info);
 }
-.phc-pill[data-tone="ok"] { background: #eefaf0; color: var(--brand-ink); }
+.phc-pill[data-tone="ok"] { background: #e8f0f6; color: var(--brand-ink); }
 .phc-pill[data-tone="warn"] { background: #fde9cf; color: var(--warn); }
 .phc-pill[data-tone="info"] { background: var(--info-bg); color: var(--info); }
 .phc-pill[data-tone="danger"] { background: #fbdcdc; color: #c0392b; }

@@ -15,7 +15,7 @@ Built for the Scaler × Wispr **Build for Bharat** hackathon · Theme: **Healthc
 docker compose up --build
 ```
 
-Open **http://localhost:3000**.
+Open **http://localhost:3000** (home page) or go straight to the app at **http://localhost:3000/visit**.
 
 Without any keys the app runs fully on built-in demo samples and shows an
 "AI key not set" note. Nothing breaks.
@@ -24,7 +24,7 @@ Without Docker: `npm install && npm run dev`.
 
 ## Try the core flow (about 1 minute)
 
-1. Tap **गर्भवती महिला** (pregnant woman).
+1. Open **/visit** (or tap **Try the live demo** on the home page), then tap **गर्भवती महिला** (pregnant woman).
 2. Under *Demo samples*, tap **Bhojpuri accent · HIGH-RISK**.
 3. Tap **समझें और जाँचें**. The structured record appears.
 4. See the red banner: severe headache + blurred vision → **refer to PHC**.
@@ -67,6 +67,8 @@ blank too. The model structures speech; it never fills in clinical values.
 - `app/lib/structurePrompt.ts` — structuring prompts per cohort
 - `app/components/` — cohort picker, mic capture, confirm screen
 - `app/api/` — structure, visits, status, transcribe routes
+- `app/page.tsx` — home page (story, data, full system map)
+- `app/visit/` — the ASHA app
 - `app/dashboard/` — PHC dashboard
 - `docs/` — manifesto and build handbook
 

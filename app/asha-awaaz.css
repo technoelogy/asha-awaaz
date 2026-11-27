@@ -4,17 +4,17 @@
    large touch targets — built to be read outdoors on a low-end phone. */
 
 .aa-root {
-  --aa-bg: #f6f7f4;
+  --aa-bg: #f4ede1;
   --aa-surface: #ffffff;
-  --aa-ink: #15201a;
-  --aa-muted: #5c6b60;
-  --aa-line: #d9ded4;
-  --aa-brand: #15803d;      /* ASHA green */
-  --aa-brand-ink: #0c4524;
+  --aa-ink: #0b2238;
+  --aa-muted: #4d5d6c;
+  --aa-line: #e2d5bf;
+  --aa-brand: #003153;      /* ASHA green */
+  --aa-brand-ink: #002640;
   --aa-accent: #d4ef83;     /* technoelogy accent, kept as a thread */
   --aa-warn: #b45309;       /* uncertain fields */
   --aa-warn-bg: #fff7ed;
-  --aa-danger: #b91c1c;
+  --aa-danger: #ca2325;
 
   min-height: 100dvh;
   background: var(--aa-bg);
@@ -40,12 +40,13 @@
 }
 
 .aa-wordmark {
+  color: var(--aa-brand);
   font-weight: 650;
   letter-spacing: -0.01em;
   font-size: 1.1rem;
 }
 .aa-wordmark span {
-  color: var(--aa-brand);
+  color: var(--aa-danger);
 }
 .aa-tagline {
   font-size: 0.78rem;
@@ -68,7 +69,7 @@
   white-space: nowrap;
 }
 .aa-chip[data-mode="mock"] { color: var(--aa-warn); border-color: #f1d9b5; background: var(--aa-warn-bg); }
-.aa-chip[data-mode="live"] { color: var(--aa-brand-ink); border-color: #bfe3c8; background: #eefaf0; }
+.aa-chip[data-mode="live"] { color: var(--aa-brand-ink); border-color: #b9cddd; background: #e8f0f6; }
 .aa-chip[data-net="offline"] { color: var(--aa-danger); border-color: #f0c9c9; background: #fdf1f1; }
 
 .aa-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
@@ -104,7 +105,7 @@
 .aa-mic[data-recording="true"] {
   border-style: solid;
   border-color: var(--aa-brand);
-  background: #eefaf0;
+  background: #e8f0f6;
 }
 .aa-mic-ring {
   width: 76px; height: 76px; border-radius: 50%;
@@ -191,8 +192,8 @@
   font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
   padding: 3px 7px; border-radius: 6px; white-space: nowrap;
 }
-.aa-badge[data-c="high"] { background: #eefaf0; color: var(--aa-brand-ink); }
-.aa-badge[data-c="medium"] { background: #f0f6ec; color: #3f6212; }
+.aa-badge[data-c="high"] { background: #e8f0f6; color: var(--aa-brand-ink); }
+.aa-badge[data-c="medium"] { background: #e8f0f6; color: #003153; }
 .aa-badge[data-c="low"] { background: #f4f4f1; color: var(--aa-muted); }
 .aa-badge[data-c="unclear"] { background: #fde9cf; color: var(--aa-warn); }
 
@@ -208,7 +209,7 @@
 .aa-success-ring {
   width: 64px; height: 64px; border-radius: 50%;
   display: grid; place-items: center; margin: 4px auto 14px;
-  background: #eefaf0; color: var(--aa-brand); font-size: 1.8rem;
+  background: #e8f0f6; color: var(--aa-brand); font-size: 1.8rem;
 }
 
 .aa-footer { text-align: center; color: var(--aa-muted); font-size: 0.74rem; margin-top: 28px; line-height: 1.6; }

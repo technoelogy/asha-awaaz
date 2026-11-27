@@ -187,7 +187,7 @@ export default function DashboardPage() {
         ) : rows.length === 0 ? (
           <p className="phc-empty">
             No visits logged yet. Confirm a visit in the{" "}
-            <Link href="/">ASHA Awaaz app</Link> and it appears here.
+            <Link href="/visit">ASHA Awaaz app</Link> and it appears here.
           </p>
         ) : (
           <div className="phc-tablewrap">
@@ -272,7 +272,7 @@ export default function DashboardPage() {
         )}
 
         <footer className="phc-footer">
-          <Link href="/">← Back to ASHA Awaaz</Link>
+          <Link href="/visit">← Back to the app</Link> · <Link href="/">Home</Link>
           <span>Synthetic data only · structured record is the source of truth</span>
         </footer>
       </div>
