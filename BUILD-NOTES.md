@@ -101,6 +101,119 @@ Output: one results line for the deck, e.g. "15 live voice tests across 3 input 
 
 ---
 
+## Tech reference (how it's built)
+
+### Stack
+| Layer | Choice | Notes |
+|---|---|---|
+| Framework | Next.js 16.3.8 (App Router, Turbopack), React 19.2.8 | TypeScript strict, plain scoped CSS (no Tailwind) |
+| Structuring AI | Anthropic Messages API, model `claude-haiku-4-5`, temperature 0 | Called server-side only; model set by `ASHA_MODEL` |
+| Guardrail | `app/lib/validator.ts` | Re-derives every field after the AI; unstated / off-list / out-of-range → `null` + "unclear"; `llm_clinical_inference: false` |
+| Database | Supabase Postgres, table `visit_notes` (`supabase-schema.sql`) | Full record in `record` jsonb + a few flat columns for the dashboard; RLS on, no policies |
+| Speech in (demo) | Chrome Web Speech API; Wispr Flow dictation into the text box | Production seam: `app/api/transcribe/route.ts` |
+| Speech out | Browser `speechSynthesis`, Hindi voice | `app/lib/voice.ts` |
+| Offline | `app/lib/queue.ts`, localStorage queue → drains to `/api/visits` on reconnect | Visit never lost; she is told it is queued |
+| Fonts | `@fontsource/tiro-devanagari-hindi`, `@fontsource/mukta` | Bundled at build, so no internet needed in Docker |
+| Hosting | Vercel (auto-deploy from GitHub `main`) | asha-awaaz.vercel.app |
+| Container | `Dockerfile` (node:22-alpine, 3 stages) + `docker-compose.yml`; Next `output: "standalone"` | Starts with zero keys |
+
+### Routes
+| Path | What |
+|---|---|
+| `/` | Home page (story, data, live phone demo, system map) |
+| `/visit` | The ASHA app: who is it for → speak → confirm → saved |
+| `/dashboard` | Health centre (PHC) view of all visits |
+| `POST /api/structure` | Transcript → structured record (AI + validator). Mock samples if no key |
+| `GET/POST /api/visits` | List / save visits in Supabase. "local" mode if no keys |
+| `GET /api/status` | `{"structuring":"live|demo","datastore":"live|local"}` |
+| `POST /api/transcribe` | Speech engine socket (Wispr today; Sarvam next) |
+
+### Environment variables
+| Name | Where | Required? |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | `.env.local` + Vercel | No. Without it, demo samples run |
+| `ASHA_MODEL` | same | No (default `claude-haiku-4-5`) |
+| `SUPABASE_URL` | same | No. Full URL *or* bare project ref both work |
+| `SUPABASE_SERVICE_KEY` | same, **server only, never `NEXT_PUBLIC_`** | No. Without it, datastore is "local" |
+| `SARVAM_API_KEY` | `.env.local` only (so far) | Not used yet |
+| `ASHA_MOCK=1` | optional | Forces demo mode even with a key |
+
+All values are trimmed in code (guards against pasted spaces / line breaks).
+
+### Schema v1.1 (cohort-aware)
+- `cohort`: `pregnant` | `adolescent`, stored inside `record` jsonb, so no DB migration was needed when cohorts were added.
+- Pregnant: name, age, gestational week, BP status, iron (IFA) compliance, follow-up, 5 danger signs (bleeding, swelling, blurred vision, severe headache, reduced fetal movement), each `present | absent | unclear`.
+- Adolescent (RKSK / WIFS): in school, periods started, period pattern, menstrual hygiene, IFA (blue tablet), deworming (albendazole), pallor, nutrition, marriage pressure, follow-up; danger signs: severe pallor, breathlessness, heavy bleeding.
+- Any danger sign `present` → red **PHC रेफर कीजिए** banner.
+
+### Everyday commands
+```bash
+git pull                                   # get Claude's latest pushes
+docker compose up --build                  # one-command start (Docker Desktop must be open)
+npm install && npm run dev                 # without Docker
+curl https://asha-awaaz.vercel.app/api/status
+curl -s https://asha-awaaz.vercel.app/api/visits | head -c 300
+open -e .env.local                         # edit keys in TextEdit
+```
+
+### Deploy / key-change checklist
+1. Edit the variable in Vercel → Settings → Environment Variables → ⋮ → Edit → paste into **Value** → Save.
+2. **Redeploy** (Deployments → ⋮ → Redeploy). Env changes only apply to a new deployment.
+3. Wait for **Ready**, then run the two `curl` checks above.
+
+---
+
+## Hurdles log (symptom → cause → fix → lesson)
+
+| # | Date | Symptom | Root cause | Fix | Lesson |
+|---|---|---|---|---|---|
+| 1 | 19 Nov | `cd` into project failed | Folder name typo (`asha-awaz`) | Real path `~/Projects/technoelogy-lab/ASHA-Awaaz` | Copy paths, don't retype |
+| 2 | 19 Nov | Tarball "not found" in ~/Downloads | Browser saved into the project folder | Extract from current folder | Check where downloads land |
+| 3 | 19 Nov | Pasted commands failed (`[200~`, `npm` prefix, `git push~`) | Stray characters from copy-paste | One clean command at a time | Paste into Terminal one line at a time |
+| 4 | 19 Nov | Vercel couldn't see the repo | GitHub app not granted access | "Adjust GitHub App Permissions" → add `asha-awaaz` | New repos need explicit Vercel access |
+| 5 | 19 Nov | Daily notes landed in the wrong repo | Notes belong in `technoelogy/notes` | Moved; now pushed directly | One repo per purpose |
+| 6 | 27 Nov | `docker compose` failed | Docker daemon not running | Open Docker Desktop first | Daemon ≠ CLI |
+| 7 | 27 Nov | "समझें और जाँचें" looked broken on a fresh start | Disabled until there's text or a sample; judges see a dead button | No-key mode puts samples on top + hint line under the button | Design the first 10 seconds for a judge with no keys |
+| 8 | 27 Nov | Unclear field spilled past card edges on phones; fixer too tall; empty grey grid cell | Mobile CSS not tuned | Mobile-first pass: compact fixer, inline input, last odd cell spans 2 | Screenshot at 390 px before calling it done |
+| 9 | 27 Nov | Saved screen said "(2 कतार में)" while online | Queue count shown before the sync finished | Show count only when offline | Only show a status the user can act on |
+| 10 | 27 Nov | Dashboard "No datastore" while `/api/status` said live | `SUPABASE_URL` in Vercel held only the project ref → "Failed to parse URL" | Code accepts ref or full URL | `/api/status` checks presence, not validity; test the real call |
+| 11 | 27 Nov | `/dashboard.` gave 404 | Trailing full stop copied from chat | Type URLs without punctuation | Never end a message with a URL followed by a full stop |
+| 12 | 27 Nov | Typing the URL in Terminal: "no such file" | Needs `curl` in front | `curl https://…` | Terminal ≠ browser bar |
+| 13 | 27 Nov | Supabase table showed a public globe icon | RLS off | Enabled RLS, no policies | Server key bypasses RLS, so the app is unaffected |
+| 14 | 27 Nov | Phone demo text invisible on the home page | Dark section's light text colour inherited into the white phone | Set `color` on the phone body | Scoped colours on nested components |
+| 15 | 27 Nov | Logo quote marks "removed" but still showing | Formatter had split the JSX across lines, so find-and-replace missed it | Regex replace + grep to verify | Verify edits by searching, not assuming |
+| 16 | 27 Nov | Test server wouldn't start | Old process still on port 3311 | `fuser -k 3311/tcp` before restart | Free the port first |
+| 17 | 27 Nov | **API keys visible in a screenshot** (2nd day running) | `.env.local` open on screen | Rotated Anthropic + Supabase keys, updated Vercel, redeployed | Close `.env` before any screenshot; show names only |
+| 18 | 27 Nov | Went to OpenAI's site to rotate the key | App uses Anthropic, not OpenAI | console.anthropic.com → API Keys | Know which vendor each key belongs to |
+| 19 | 27 Nov | After rotation, `/api/visits` → "Unregistered API key" even after redeploy | Stray whitespace in the pasted key | Code now `.trim()`s every key | Defensive trimming on all env values |
+| 20 | 27 Nov | `/api/visitss` returned an HTML 404 | Typo | Correct URL | Read the first line of output before reacting |
+
+### Lint rules that bit us
+- `react-hooks/set-state-in-effect`: call `setState` inside the promise `.then()`, not directly in the effect body.
+- `@next/next/no-html-link-for-pages`: use `<Link>` from `next/link` for internal links, not `<a>`.
+
+---
+
+## Step-by-step log (what was done, in order)
+
+**19 Nov**
+1. Two cohorts live (pregnant + adolescent), danger-sign screening, cohort picker.
+2. Repo created on GitHub, Vercel project imported and connected, env vars added, live structuring working.
+
+**27 Nov**
+1. Docker: `Dockerfile`, `docker-compose.yml`, `.dockerignore`, `output: "standalone"` → tested on Mac.
+2. `/api/status` + key-not-set banner; judge-facing README.
+3. Mobile-first pass on confirm / capture / picker screens; verified with Playwright at 390 px.
+4. Production DB fix (Supabase URL), queue-count fix, synced queued visits (8 rows).
+5. Home page v1 → v2 (product-first hero, illustration, Today vs With, animated phone) → v3 (fonts, brand line, Bharat wording, lighter watermark, walk-in animation) → v4 (fits one screen on all devices, no quote marks, footer credit).
+6. Moved app to `/visit`; updated dashboard links + README.
+7. RLS on; repo public; root tidied into `docs/`.
+8. Speech engine decision (Sarvam for pilot); Sarvam account + key saved locally.
+9. Key rotation (Anthropic, Supabase) → Vercel updated → redeploy → trim fix → verified live.
+10. Build Notes v2 + daily note pushed to `technoelogy/notes`.
+
+---
+
 ## 2026-11-19 — Two cohorts live + deployed
 
 Shipped
