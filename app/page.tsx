@@ -150,8 +150,7 @@ export default function Home() {
         <header className="ln-nav">
           <div className="ln-brand">
             <Link href="/" className="ln-logo" aria-label="ASHA Awaaz home">
-              ASHA <span className="ln-q">‘</span>Awaaz
-              <span className="ln-q">’</span>
+              ASHA <span>Awaaz</span>
             </Link>
             <span className="ln-brand-line" lang="hi">
               स्वस्थ नारी, सशक्त भारत

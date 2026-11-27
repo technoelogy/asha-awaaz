@@ -48,7 +48,6 @@
 .aa-wordmark span {
   color: var(--aa-danger);
 }
-.aa-wordmark .aa-q { font-family: Georgia, serif; font-size: 1.2em; line-height: 0; position: relative; top: 0.1em; }
 .aa-tagline {
   font-size: 0.78rem;
   color: var(--aa-muted);

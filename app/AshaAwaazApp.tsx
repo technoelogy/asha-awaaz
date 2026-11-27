@@ -118,7 +118,7 @@ export default function AshaAwaazApp() {
         <div className="aa-topbar">
           <div>
             <Link href="/" className="aa-wordmark" style={{ textDecoration: "none" }}>
-              ASHA <span className="aa-q">‘</span>Awaaz<span className="aa-q">’</span>
+              ASHA <span>Awaaz</span>
             </Link>
             <div className="aa-tagline">बोलिए, लिखना नहीं · voice visit log</div>
           </div>

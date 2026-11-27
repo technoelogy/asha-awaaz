@@ -313,8 +313,7 @@
 .ln-root { font-size: 17px; }
 .ln-brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; min-width: 0; }
 .ln-logo { font-family: var(--sans); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.01em; }
-.ln-logo span { color: inherit; }
-.ln-logo .ln-q { font-family: var(--serif); color: var(--sindoor); font-size: 1.25em; line-height: 0; position: relative; top: 0.12em; }
+.ln-logo span { color: var(--sindoor); }
 .ln-brand-line { padding-left: 14px; border-left: 1.5px solid color-mix(in srgb, var(--prussian) 25%, transparent); font-family: var(--serif); font-size: 1.3rem; color: var(--prussian); white-space: nowrap; }
 @media (max-width: 640px) {
   .ln-brand { flex-direction: column; gap: 0; }
@@ -341,4 +340,27 @@
 @keyframes ln-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .ln-asha, .ln-asha-bob, .ln-waves-in, .ln-card-in { animation: none; }
+}
+
+/* ── v4: first fold fits the screen on every device ── */
+.ln-fold { min-height: 100svh; display: flex; flex-direction: column; }
+.ln-hero { flex: 1; align-content: center; padding: 20px 0 28px; gap: 16px; }
+.ln-illus-cap { margin-top: 2px; font-size: 0.74rem; }
+@media (max-width: 999px) {
+  .ln-h1 { font-size: clamp(2.3rem, 9.5vw, 3.6rem); }
+  .ln-h1 em { font-size: 0.52em; margin-top: 6px; }
+  .ln-lede { margin: 12px 0 16px; font-size: 0.98rem; line-height: 1.5; }
+  .ln-cta-row { gap: 10px; }
+  .ln-cta-row .ln-btn { min-height: 44px; padding: 0 16px; font-size: 0.92rem; }
+  .ln-nav { padding: 12px 0; }
+}
+@media (min-width: 1000px) {
+  .ln-hero { grid-template-columns: 0.85fr 1.15fr; padding: 24px 0 40px; }
+}
+@media (min-width: 1000px) and (max-height: 760px) {
+  .ln-h1 { font-size: 3.6rem; }
+  .ln-lede { margin: 14px 0 18px; font-size: 1rem; }
+}
+@media (min-width: 1600px) {
+  .ln-nav, .ln-hero { width: min(100% - 64px, 1440px); }
 }
