@@ -118,6 +118,9 @@ const DANGER_CUES: Record<string, RegExp> = {
   breathlessness: /saans|साँस|सांस|breath|haanf|हांफ|हाँफ|phoolti|फूलती/i,
   heavy_bleeding: /mahwari|माहवारी|महावारी|period|पीरियड|khoon|खून|bleed|blood/i,
 };
+const NUTRITION_CUES =
+  /dubl|दुबल|दुबली|patl|पतल|thin|wajan|वजन|वज़न|weight|kha(na|ti|ate)|खाना|खाती|poshan|पोषण|nutrition|moti|मोटी|healthy|swasth|स्वस्थ|sehat|सेहत|kuposh|कुपोष/i;
+
 function hasEvidence(sign: string, verbatim: string): boolean {
   const re = DANGER_CUES[sign];
   return re ? re.test(verbatim) : true;
@@ -256,6 +259,11 @@ export function enforceGuardrails(
     a.nutrition = clampEnum<Exclude<NutritionStatus, null>>(ado.nutrition, NUTRITION_VALUES);
     if (a.nutrition === null && ado.nutrition != null && claimedConf.nutrition !== "unclear")
       forcedUncertain.add("nutrition");
+    // Nutrition must be spoken about, not inferred from pallor/weakness (test 6).
+    if (a.nutrition !== null && !NUTRITION_CUES.test(verbatim)) {
+      a.nutrition = null;
+      forcedUncertain.add("nutrition");
+    }
 
     a.marriage_pressure = clampEnum<TriState>(ado.marriage_pressure, TRISTATE_VALUES) ?? "unclear";
 
