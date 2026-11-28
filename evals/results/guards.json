@@ -1,0 +1,114 @@
+{
+  "run_at": "2026-11-28T13:02:15.170Z",
+  "mode": "guards",
+  "base_url": null,
+  "passed": 15,
+  "total": 15,
+  "rows": [
+    {
+      "id": "G2-followup-inferred",
+      "why": "AI guessed a follow-up from a danger sign; she never said it",
+      "pass": true,
+      "ms": 1,
+      "misses": []
+    },
+    {
+      "id": "followup-spoken",
+      "why": "A follow-up she did say must be kept",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "G6-iron-negation-flip",
+      "why": "Noise dropped meaning: 'goli nahi le rahi' saved as taking",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "iron-taking-true",
+      "why": "A true 'taking' must not be cleared by the negation guard",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "G8-goli-misheard",
+      "why": "Engine wrote गली for goli; the negation still sits next to आयरन",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "G9-invented-danger-sign",
+      "why": "AI flagged reduced baby movement; nobody spoke of movement",
+      "pass": true,
+      "ms": 1,
+      "misses": []
+    },
+    {
+      "id": "danger-sign-spoken",
+      "why": "A danger sign she said must stay present (refer banner fires)",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "danger-absent-unspoken",
+      "why": "A sign never asked about must not be saved as 'absent' (silent miss)",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "danger-absent-blanket",
+      "why": "'Koi takleef nahi' is a real answer: absent may stay",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "G11-nutrition-inferred",
+      "why": "AI called her 'thin' from pallor; nutrition was never discussed",
+      "pass": true,
+      "ms": 1,
+      "misses": []
+    },
+    {
+      "id": "nutrition-spoken",
+      "why": "Nutrition she described must be kept",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "adolescent-ifa-negation",
+      "why": "Weekly blue tablet not taken must not save as taking",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "week-out-of-range",
+      "why": "Misheard number: week 60 is impossible, so ask, don't save",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "off-list-value",
+      "why": "AI invented a BP category outside the form's options",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "G7-nothing-captured",
+      "why": "Reel noise / garbage: model returns nothing. Nothing may be invented",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    }
+  ]
+}

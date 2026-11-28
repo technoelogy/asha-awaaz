@@ -121,6 +121,19 @@ const DANGER_CUES: Record<string, RegExp> = {
 const NUTRITION_CUES =
   /dubl|दुबल|दुबली|patl|पतल|thin|wajan|वजन|वज़न|weight|kha(na|ti|ate)|खाना|खाती|poshan|पोषण|nutrition|moti|मोटी|healthy|swasth|स्वस्थ|sehat|सेहत|kuposh|कुपोष/i;
 
+// A blanket "no problems" answer. Lets "absent" stand for signs she didn't
+// name one by one. Without this or the sign's own word, "absent" is a guess
+// (eval G12: model marked unasked signs absent) -> "unclear", she is asked.
+const ALL_CLEAR_CUES =
+  /koi (bhi )?(takleef|taklif|dikkat|pareshani|problem|samasya|lakshan)|कोई (भी )?(तकलीफ़|तकलीफ|दिक्कत|परेशानी|समस्या|लक्षण|प्रॉब्लम)|sab (theek|thik|normal)|सब (ठीक|नॉर्मल)|no (problem|complaint|danger)|all (fine|normal)/i;
+
+/** Status a danger sign may keep: present/absent need words behind them. */
+function evidenced(v: DangerSignStatus | null, sign: string, verbatim: string): DangerSignStatus {
+  if (v === "present") return hasEvidence(sign, verbatim) ? "present" : "unclear";
+  if (v === "absent") return hasEvidence(sign, verbatim) || ALL_CLEAR_CUES.test(verbatim) ? "absent" : "unclear";
+  return "unclear";
+}
+
 function hasEvidence(sign: string, verbatim: string): boolean {
   const re = DANGER_CUES[sign];
   return re ? re.test(verbatim) : true;
@@ -218,8 +231,7 @@ export function enforceGuardrails(
     const rawDanger = nested(raw, "danger_signs");
     for (const sign of DANGER_SIGNS) {
       const v = clampEnum<DangerSignStatus>(rawDanger[sign], DANGER_SIGN_VALUES);
-      note.danger_signs[sign] =
-        v === "present" && !hasEvidence(sign, verbatim) ? "unclear" : (v ?? "unclear");
+      note.danger_signs[sign] = evidenced(v, sign, verbatim);
     }
   } else {
     // --- adolescent (RKSK / WIFS) -----------------------------------------
@@ -271,8 +283,7 @@ export function enforceGuardrails(
     const rawDanger = nested(raw, "adolescent_danger_signs");
     for (const sign of ADOLESCENT_DANGER_SIGNS) {
       const v = clampEnum<DangerSignStatus>(rawDanger[sign], DANGER_SIGN_VALUES);
-      note.adolescent_danger_signs[sign] =
-        v === "present" && !hasEvidence(sign, verbatim) ? "unclear" : (v ?? "unclear");
+      note.adolescent_danger_signs[sign] = evidenced(v, sign, verbatim);
     }
   }
 

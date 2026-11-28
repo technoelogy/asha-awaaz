@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "eval": "tsx evals/run.ts",
+    "eval:live": "tsx evals/run.ts --live"
   },
   "dependencies": {
     "@fontsource/mukta": "^5.3.0",
@@ -21,6 +23,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
