@@ -1,0 +1,47 @@
+/* ASHA Awaaz — "coming next" preview pages. */
+.nx-pill {
+  font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+  background: var(--aa-warn-bg); color: var(--aa-warn); border: 1px solid #f1d9b5; white-space: nowrap;
+}
+.nx-link { text-decoration: none; color: inherit; }
+.nx-h2 { font-size: 1.05rem; font-weight: 680; margin: 0 0 8px; }
+.nx-list { margin: 0; padding-left: 18px; color: var(--aa-ink); font-size: 0.92rem; line-height: 1.6; }
+.nx-back { text-align: center; font-size: 0.88rem; margin-top: 18px; color: var(--aa-muted); }
+.nx-back a { color: var(--aa-brand); }
+.nx-head { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.nx-head .aa-h1 { margin: 0; }
+.nx-en { margin: 0; color: var(--aa-muted); font-size: 0.88rem; }
+.nx-meta { margin: 0; display: grid; gap: 8px; }
+.nx-meta div { display: grid; grid-template-columns: 92px 1fr; gap: 8px; font-size: 0.86rem; }
+.nx-meta dt { color: var(--aa-muted); font-weight: 600; }
+.nx-meta dd { margin: 0; }
+.nx-step {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--aa-muted); margin: 0 0 8px;
+}
+.nx-step:not(:first-child) { margin-top: 18px; }
+.nx-said {
+  margin: 0; padding: 12px 14px; border-radius: 12px; background: #e8f0f6;
+  color: var(--aa-brand-ink); font-size: 1rem; line-height: 1.55;
+}
+.nx-fields { display: grid; gap: 6px; }
+.nx-field {
+  display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center;
+  padding: 9px 12px; border: 1px solid var(--aa-line); border-radius: 10px; font-size: 0.92rem;
+}
+.nx-field-label small { display: block; color: var(--aa-muted); font-size: 0.74rem; }
+.nx-field-value { font-weight: 600; text-align: right; }
+.nx-flag { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #f1f2ee; color: var(--aa-muted); }
+.nx-field[data-flag="risk"] { border-color: #f0c9c9; background: #fdf6f6; }
+.nx-field[data-flag="risk"] .nx-flag { background: #fbe3e3; color: var(--aa-danger); }
+.nx-field[data-flag="unclear"] { border-color: #f1d9b5; background: var(--aa-warn-bg); }
+.nx-field[data-flag="unclear"] .nx-flag { background: #fde9cf; color: var(--aa-warn); }
+.nx-field[data-flag="ok"] .nx-flag { background: #e8f0f6; color: var(--aa-brand); }
+.nx-outcome {
+  display: grid; gap: 2px; padding: 12px 14px; border-radius: 12px;
+  background: var(--aa-brand); color: #fff; font-size: 0.95rem;
+}
+.nx-outcome span { font-size: 0.82rem; opacity: 0.85; }
+.nx-rule p:last-child { margin: 0; font-size: 0.9rem; line-height: 1.55; color: var(--aa-ink); }
+.nx-others { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; }
+.nx-chip { text-decoration: none; }

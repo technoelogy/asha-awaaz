@@ -6,6 +6,7 @@
 // structuring, validation and the confirm screen all run cohort-aware.
 "use client";
 
+import Link from "next/link";
 import { Cohort } from "../lib/schema";
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 
 interface Option {
   cohort: Cohort | null; // null = roadmap (coming soon)
+  slug?: string; // preview page under /next
   emoji: string;
   title: string; // Hindi
   sub: string; // who / what
@@ -22,9 +24,9 @@ interface Option {
 const OPTIONS: Option[] = [
   { cohort: "pregnant", emoji: "🤰", title: "गर्भवती महिला", sub: "ANC · pregnancy check" },
   { cohort: "adolescent", emoji: "👧", title: "किशोरी (10–19)", sub: "RKSK / WIFS · anaemia" },
-  { cohort: null, emoji: "👩", title: "30+ महिला", sub: "NCD screening · जल्द आ रहा है" },
-  { cohort: null, emoji: "🤱", title: "नई माँ", sub: "PNC · जल्द आ रहा है" },
-  { cohort: null, emoji: "🧒", title: "5 साल से छोटा बच्चा", sub: "Growth · जल्द आ रहा है" },
+  { cohort: null, slug: "ncd", emoji: "👩", title: "30+ महिला", sub: "NCD screening · जल्द आ रहा है" },
+  { cohort: null, slug: "pnc", emoji: "🤱", title: "नई माँ", sub: "PNC · जल्द आ रहा है" },
+  { cohort: null, slug: "hbyc", emoji: "🧒", title: "5 साल से छोटा बच्चा", sub: "Growth · जल्द आ रहा है" },
 ];
 
 export default function CohortPicker({ onPick }: Props) {
@@ -59,9 +61,9 @@ export default function CohortPicker({ onPick }: Props) {
       <div className="aa-soon">
         <span className="aa-soon-label">जल्द · coming soon</span>
         {OPTIONS.filter((o) => o.cohort === null).map((o) => (
-          <span key={o.title} className="aa-soon-chip">
-            {o.emoji} {o.title}
-          </span>
+          <Link key={o.title} href={`/next/${o.slug}`} className="aa-soon-chip aa-soon-link">
+            {o.emoji} {o.title} ›
+          </Link>
         ))}
       </div>
     </div>

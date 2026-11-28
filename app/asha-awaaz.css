@@ -335,6 +335,8 @@
   font-size: 0.74rem; padding: 4px 10px; border-radius: 999px;
   background: #f1f2ee; color: var(--aa-muted);
 }
+.aa-soon-link { text-decoration: none; border: 1px dashed #c9cfc4; }
+.aa-soon-link:hover { color: var(--aa-brand); border-color: var(--aa-brand); }
 
 /* Capture: samples tighten to two lines; first when no AI key. */
 .aa-samples[data-first="true"] {
