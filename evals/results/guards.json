@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-11-28T13:24:36.972Z",
+  "run_at": "2026-11-28T13:56:56.736Z",
   "mode": "guards",
   "base_url": null,
   "passed": 29,
@@ -9,35 +9,35 @@
       "id": "G2-followup-inferred",
       "why": "AI guessed a follow-up from a danger sign; she never said it",
       "pass": true,
-      "ms": 8,
+      "ms": 1,
       "misses": []
     },
     {
       "id": "followup-spoken",
       "why": "A follow-up she did say must be kept",
       "pass": true,
-      "ms": 1,
+      "ms": 0,
       "misses": []
     },
     {
       "id": "G6-iron-negation-flip",
       "why": "Noise dropped meaning: 'goli nahi le rahi' saved as taking",
       "pass": true,
-      "ms": 0,
+      "ms": 1,
       "misses": []
     },
     {
       "id": "iron-taking-true",
       "why": "A true 'taking' must not be cleared by the negation guard",
       "pass": true,
-      "ms": 0,
+      "ms": 1,
       "misses": []
     },
     {
       "id": "G8-goli-misheard",
       "why": "Engine wrote गली for goli; the negation still sits next to आयरन",
       "pass": true,
-      "ms": 1,
+      "ms": 0,
       "misses": []
     },
     {
@@ -58,7 +58,7 @@
       "id": "danger-absent-unspoken",
       "why": "A sign never asked about must not be saved as 'absent' (silent miss)",
       "pass": true,
-      "ms": 0,
+      "ms": 1,
       "misses": []
     },
     {
@@ -93,7 +93,7 @@
       "id": "week-out-of-range",
       "why": "Misheard number: week 60 is impossible, so ask, don't save",
       "pass": true,
-      "ms": 0,
+      "ms": 1,
       "misses": []
     },
     {
