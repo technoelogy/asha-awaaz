@@ -31,7 +31,7 @@ const MOTIF: { lang: string; text: string }[] = [
   { lang: "te", text: "ఆరోగ్యవంతమైన స్త్రీ, శక్తివంతమైన భారత్" },
   { lang: "gu", text: "સ્વસ્થ નારી, સશક્ત ભારત" },
   { lang: "ml", text: "ആരോഗ്യമുള്ള സ്ത്രീ, ശക്തമായ ഭാരതം" },
-  { lang: "pa", text: "ਸਿਹਤਮੰਦ ਨਾਰੀ, ਸਸ਼ਕਤ ਭਾਰਤ" },
+  { lang: "pa", text: "ਸਿਹਤਮੰਦ ਔਰਤ, ਸਸ਼ਕਤ ਭਾਰਤ" },
   { lang: "or", text: "ସୁସ୍ଥ ନାରୀ, ସଶକ୍ତ ଭାରତ" },
   { lang: "ur", text: "صحت مند عورت، مضبوط بھارت" },
   { lang: "en", text: "A healthy woman, a stronger Bharat" },
