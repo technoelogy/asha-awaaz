@@ -23,14 +23,15 @@ const SPEAKER = speakerArg > -1 ? process.argv[speakerArg + 1] : "ishita";
 const PACE = Number(process.env.PACE || 1);
 
 // start = second on the video timeline; end = when the next beat begins.
-// tts = what the voice reads (spelled for speech); sub = what the screen shows.
+// tts = what the voice reads (spelled for speech; Indian words in Devanagari so Sarvam says them right);
+// sub = what the screen shows.
 const BEATS = [
   { id: "01-hook", start: 0, end: 8,
     sub: "Ten lakh women carry India’s health system to the doorstep. They are called ASHAs. Most people have never heard of them.",
-    tts: "Ten lakh women carry India's health system to the doorstep. They are called Ashas. Most people have never heard of them." },
+    tts: "Ten lakh women carry India's health system to the doorstep. They are called आशा workers. Most people have never heard of them." },
   { id: "02-who", start: 8, end: 20,
     sub: "An ASHA visits every pregnant woman in her village. She checks for danger signs, and writes it all in a paper register.",
-    tts: "An Asha visits every pregnant woman in her village. She checks for danger signs, and writes it all in a paper register." },
+    tts: "An आशा worker visits every pregnant woman in her village. She checks for danger signs, and writes it all in a paper register." },
   { id: "03-gap", start: 20, end: 35,
     sub: "But paper can’t be checked. In one study, records showed 96% of day-7 newborn visits done. Families confirmed 46%.",
     tts: "But paper can't be checked. In one study, records showed ninety-six percent of day-seven newborn visits done. Families confirmed forty-six percent." },
@@ -39,7 +40,7 @@ const BEATS = [
     tts: "And when she sends a woman with a danger sign to the health centre, nobody tells her if anyone saw it. Half of maternal deaths start with a delay like this." },
   { id: "05-loop", start: 55, end: 70,
     sub: "ASHA Awaaz closes that loop. The health centre marks the referral seen, and the tick lands on her phone. Here is how it got there.",
-    tts: "Asha Awaaz closes that loop. The health centre marks the referral seen, and the tick lands on her phone. Here is how it got there." },
+    tts: "आशा आवाज़ closes that loop. The health centre marks the referral seen, and the tick lands on her phone. Here is how it got there." },
   { id: "06-pick", start: 70, end: 78,
     sub: "She picks who the visit is for.",
     tts: "She picks who the visit is for." },
@@ -63,7 +64,7 @@ const BEATS = [
     tts: "Next: women over thirty, new mothers and young children, on the same engine. About fifty-three paise a note." },
   { id: "13-close", start: 168, end: 175,
     sub: "ASHA Awaaz. Built for impact. Built for a greater Bharat.",
-    tts: "Asha Awaaz. Built for impact. Built for a greater Bharat." },
+    tts: "आशा आवाज़. Built for impact. Built for a greater भारत." },
 ];
 
 // --- tiny WAV helpers (PCM 16-bit) -------------------------------------------
