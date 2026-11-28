@@ -17,7 +17,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { VisitLanguage } from "./schema";
 import { getMockSample } from "./mockData";
 
-export type VoiceSource = "browser" | "wispr" | "mock";
+export type VoiceSource = "browser" | "wispr" | "sarvam" | "mock";
+
+// Sarvam sync REST accepts ≤30 s; stop a little before.
+export const SARVAM_MAX_MS = 29_000;
 export type CaptureStatus = "idle" | "recording" | "transcribing" | "error";
 
 // --- minimal Web Speech API typings (not in standard lib.dom everywhere) ---
@@ -49,6 +52,10 @@ function getSpeechRecognition(): SpeechRecognitionCtor | null {
   return w.SpeechRecognition || w.webkitSpeechRecognition || null;
 }
 
+export function hasBrowserSpeech(): boolean {
+  return getSpeechRecognition() !== null;
+}
+
 function envVoiceSource(): VoiceSource | null {
   const env = process.env.NEXT_PUBLIC_VOICE_SOURCE as VoiceSource | undefined;
   return env === "browser" || env === "wispr" || env === "mock" ? env : null;
@@ -63,6 +70,7 @@ export function resolveVoiceSource(): VoiceSource {
 
 export interface VoiceCapture {
   source: VoiceSource;
+  setSource: (s: VoiceSource) => void;
   status: CaptureStatus;
   elapsedMs: number;
   error: string | null;
@@ -71,11 +79,14 @@ export interface VoiceCapture {
   cancel: () => void;
 }
 
-export function useVoiceCapture(language: VisitLanguage): VoiceCapture {
+export function useVoiceCapture(
+  language: VisitLanguage,
+  onAutoStop?: (text: string) => void,
+): VoiceCapture {
   // Deterministic on server and client (env value, else "browser") so there is
   // no hydration mismatch. A browser without speech support gets a clear "use
   // Chrome" error at start() time rather than being silently downgraded.
-  const [source] = useState<VoiceSource>(() => resolveVoiceSource());
+  const [source, setSource] = useState<VoiceSource>(() => resolveVoiceSource());
   const [status, setStatus] = useState<CaptureStatus>("idle");
   const [elapsedMs, setElapsedMs] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -88,6 +99,17 @@ export function useVoiceCapture(language: VisitLanguage): VoiceCapture {
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startedAtRef = useRef(0);
+  // Refs read from the timer callback (never during render).
+  const sourceRef = useRef<VoiceSource>("browser");
+  const stopRef = useRef<(() => Promise<string>) | null>(null);
+  const onAutoStopRef = useRef(onAutoStop);
+  const autoStoppingRef = useRef(false);
+  useEffect(() => {
+    sourceRef.current = source;
+  }, [source]);
+  useEffect(() => {
+    onAutoStopRef.current = onAutoStop;
+  });
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -98,10 +120,19 @@ export function useVoiceCapture(language: VisitLanguage): VoiceCapture {
     startedAtRef.current = Date.now();
     setElapsedMs(0);
     stopTimer();
-    timerRef.current = setInterval(
-      () => setElapsedMs(Date.now() - startedAtRef.current),
-      200,
-    );
+    timerRef.current = setInterval(() => {
+      const ms = Date.now() - startedAtRef.current;
+      setElapsedMs(ms);
+      if (sourceRef.current === "sarvam" && ms >= SARVAM_MAX_MS && !autoStoppingRef.current) {
+        autoStoppingRef.current = true;
+        stopRef.current?.()
+          .then((t) => onAutoStopRef.current?.(t))
+          .catch(() => {})
+          .finally(() => {
+            autoStoppingRef.current = false;
+          });
+      }
+    }, 200);
   }, [stopTimer]);
 
   const releaseStream = useCallback(() => {
@@ -140,7 +171,7 @@ export function useVoiceCapture(language: VisitLanguage): VoiceCapture {
         rec.onerror = (e) => setError(e.error || "speech_error");
         recognitionRef.current = rec;
         rec.start();
-      } else if (source === "wispr") {
+      } else if (source === "wispr" || source === "sarvam") {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         streamRef.current = stream;
         const mr = new MediaRecorder(stream);
@@ -187,7 +218,7 @@ export function useVoiceCapture(language: VisitLanguage): VoiceCapture {
         return text;
       }
 
-      if (source === "wispr") {
+      if (source === "wispr" || source === "sarvam") {
         const mr = mediaRef.current;
         const blob = await new Promise<Blob>((resolve) => {
           if (!mr) return resolve(new Blob());
@@ -199,7 +230,11 @@ export function useVoiceCapture(language: VisitLanguage): VoiceCapture {
         mediaRef.current = null;
         const res = await fetch("/api/transcribe", {
           method: "POST",
-          headers: { "content-type": blob.type || "audio/webm", "x-lang": language },
+          headers: {
+            "content-type": blob.type || "audio/webm",
+            "x-lang": language,
+            "x-engine": source,
+          },
           body: blob,
         });
         if (!res.ok) throw new Error(`transcribe ${res.status}`);
@@ -220,6 +255,10 @@ export function useVoiceCapture(language: VisitLanguage): VoiceCapture {
     }
   }, [source, language, stopTimer, releaseStream]);
 
+  useEffect(() => {
+    stopRef.current = stop;
+  }, [stop]);
+
   const cancel = useCallback(() => {
     stopTimer();
     recognitionRef.current?.abort();
@@ -231,5 +270,5 @@ export function useVoiceCapture(language: VisitLanguage): VoiceCapture {
     setElapsedMs(0);
   }, [stopTimer, releaseStream]);
 
-  return { source, status, elapsedMs, error, start, stop, cancel };
+  return { source, setSource, status, elapsedMs, error, start, stop, cancel };
 }

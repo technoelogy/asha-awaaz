@@ -9,10 +9,10 @@
 // sample chips still work. Nothing downstream of the transcript changes.
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { VisitLanguage, Cohort } from "../lib/schema";
 import { MOCK_SAMPLES } from "../lib/mockData";
-import { useVoiceCapture } from "../lib/useVoiceCapture";
+import { useVoiceCapture, hasBrowserSpeech } from "../lib/useVoiceCapture";
 
 interface Props {
   cohort: Cohort;
@@ -34,6 +34,7 @@ function fmt(ms: number): string {
 const SOURCE_HINT: Record<string, string> = {
   browser: "बोलिए — Chrome में आवाज़ से लिखेगा",
   wispr: "Wispr से हिंदी या हिंग्लिश में बोलिए",
+  sarvam: "Sarvam · भारतीय भाषाओं का इंजन · 30 सेकंड तक",
   mock: "डेमो मोड — नीचे सैंपल चुनें",
 };
 
@@ -47,13 +48,40 @@ export default function MicCapture({
   const [language, setLanguage] = useState<VisitLanguage>("hi-en");
   const [sampleId, setSampleId] = useState<string | undefined>(undefined);
   const taRef = useRef<HTMLTextAreaElement>(null);
-  const voice = useVoiceCapture(language);
+  // Sarvam takes ≤30 s per request; the hook auto-stops and hands back the text.
+  const voice = useVoiceCapture(language, (text) => {
+    if (text) {
+      setTranscript((prev) => (prev ? `${prev} ${text}` : text));
+      setSampleId(undefined);
+    }
+  });
+  const [sarvamReady, setSarvamReady] = useState(false);
+
+  // Offer the Sarvam engine only when the server has a key for it.
+  useEffect(() => {
+    let active = true;
+    fetch("/api/status", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d: { speech?: { sarvam?: boolean } }) => {
+        if (!active) return;
+        const ready = !!d.speech?.sarvam;
+        setSarvamReady(ready);
+        // No in-browser speech (e.g. many non-Chrome phone browsers): use Sarvam.
+        if (ready && !hasBrowserSpeech()) voice.setSource("sarvam");
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
+  }, []);
 
   // Only show demo samples for the cohort being logged.
   const samples = MOCK_SAMPLES.filter((s) => s.cohort === cohort);
 
   const recording = voice.status === "recording";
   const transcribing = voice.status === "transcribing";
+  const capped = voice.source === "sarvam";
 
   async function handleMicTap() {
     if (recording) {
@@ -92,7 +120,7 @@ export default function MicCapture({
   const canStructure = transcript.trim().length > 0 && !busy && !transcribing;
 
   const micLabel = recording
-    ? `सुन रहे हैं… ${fmt(voice.elapsedMs)} · रोकने के लिए टैप करें`
+    ? `सुन रहे हैं… ${fmt(voice.elapsedMs)}${capped ? " / 0:29" : ""} · रोकने के लिए टैप करें`
     : transcribing
       ? "समझ रहे हैं…"
       : "बोलने के लिए टैप करें";
@@ -142,6 +170,30 @@ export default function MicCapture({
           {SOURCE_HINT[voice.source] ?? SOURCE_HINT.wispr}
         </span>
       </button>
+
+      {sarvamReady && (
+        <div className="aa-row aa-engine">
+          <span className="aa-field-label" style={{ margin: 0 }}>आवाज़ इंजन</span>
+          <div className="aa-seg" role="group" aria-label="speech engine">
+            <button
+              type="button"
+              aria-pressed={voice.source === "browser"}
+              disabled={recording || transcribing}
+              onClick={() => voice.setSource("browser")}
+            >
+              Chrome
+            </button>
+            <button
+              type="button"
+              aria-pressed={voice.source === "sarvam"}
+              disabled={recording || transcribing}
+              onClick={() => voice.setSource("sarvam")}
+            >
+              Sarvam
+            </button>
+          </div>
+        </div>
+      )}
 
       {voice.error && <p className="aa-error">{voice.error}</p>}
 

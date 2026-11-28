@@ -18,6 +18,33 @@
 import { getMockSample } from "../../lib/mockData";
 
 export const runtime = "nodejs";
+export const maxDuration = 30;
+
+// Sarvam (Indian-language speech engine). Sync REST: ≤30 s audio per request,
+// accepts WebM/Opus straight from the browser's MediaRecorder.
+const SARVAM_URL = "https://api.sarvam.ai/speech-to-text";
+
+async function sarvamTranscribe(audio: ArrayBuffer, contentType: string, lang: string) {
+  const form = new FormData();
+  const type = contentType.split(";")[0] || "audio/webm";
+  const ext = type.includes("ogg") ? "ogg" : type.includes("mp4") ? "m4a" : type.includes("wav") ? "wav" : "webm";
+  form.append("file", new Blob([audio], { type }), `visit.${ext}`);
+  form.append("model", process.env.SARVAM_MODEL?.trim() || "saaras:v3");
+  // Hinglish → code-mixed output; pure Hindi → standard transcription.
+  form.append("mode", process.env.SARVAM_MODE?.trim() || (lang === "hi-en" ? "codemix" : "transcribe"));
+  form.append("language_code", "hi-IN");
+  const res = await fetch(SARVAM_URL, {
+    method: "POST",
+    headers: { "api-subscription-key": (process.env.SARVAM_API_KEY ?? "").trim() },
+    body: form,
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    return { ok: false as const, detail: detail.slice(0, 300), status: res.status };
+  }
+  const data = (await res.json().catch(() => ({}))) as { transcript?: string };
+  return { ok: true as const, transcript: data.transcript ?? "" };
+}
 
 // Endpoint + field names are overridable via env so you can match Wispr's
 // contract without editing code once the key arrives.
@@ -42,8 +69,22 @@ function pickTranscript(data: unknown): string {
 
 export async function POST(req: Request) {
   const lang = req.headers.get("x-lang") || "hi";
+  const engine = req.headers.get("x-engine") || "wispr";
 
   try {
+    if (engine === "sarvam") {
+      if (!process.env.SARVAM_API_KEY?.trim()) {
+        return Response.json({ error: "sarvam_not_configured" }, { status: 400 });
+      }
+      const audio = await req.arrayBuffer();
+      if (!audio.byteLength) return Response.json({ error: "empty_audio" }, { status: 400 });
+      const out = await sarvamTranscribe(audio, req.headers.get("content-type") || "audio/webm", lang);
+      if (!out.ok) {
+        return Response.json({ error: "sarvam_failed", detail: out.detail }, { status: 502 });
+      }
+      return Response.json({ mode: "live", engine: "sarvam", transcript: out.transcript });
+    }
+
     if (mockMode()) {
       // Before Wispr is wired, return a canned transcript so the full pipeline
       // (record -> transcribe -> structure -> confirm) still runs end to end.

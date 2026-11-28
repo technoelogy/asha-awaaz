@@ -11,6 +11,7 @@ export function GET() {
     !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_KEY;
   return Response.json({
     structuring: aiKey ? "live" : "demo",
+    speech: { sarvam: !!process.env.SARVAM_API_KEY?.trim() },
     datastore: datastore ? "live" : "local",
   });
 }

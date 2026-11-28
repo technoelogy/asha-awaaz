@@ -414,3 +414,5 @@
 .aa-refs li[data-seen="true"] { border-color: #b9cddd; background: #e8f0f6; }
 .aa-refs-status { font-size: 0.85rem; color: #ca2325; white-space: nowrap; }
 .aa-refs li[data-seen="true"] .aa-refs-status { color: #003153; font-weight: 600; }
+
+.aa-engine { margin: 10px 0 2px; }
