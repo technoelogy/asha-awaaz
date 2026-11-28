@@ -105,6 +105,24 @@ function contradictsTaking(value: string | null, verbatim: string): boolean {
   return value === "taking" && IRON_NEGATED.test(verbatim);
 }
 
+// Evidence check for danger signs: a sign can only be "present" if the
+// transcript actually mentions it. The model once flagged "reduced fetal
+// movement" when nobody spoke of the baby moving. No evidence -> "unclear".
+const DANGER_CUES: Record<string, RegExp> = {
+  severe_headache: /\bsir\b|\bsar\b|sardard|sirdard|सिर|सर |सर$|सरदर्द|सिरदर्द|headache|head ?ache/i,
+  blurred_vision: /dhundh|धुंध|धुँध|blur|aankh|आंख|आँख|nazar|नज़र|नजर|dikh|दिख/i,
+  swelling: /sujan|soojan|सूजन|सूज|swell|phool ga|फूल ग|फूल रहे|फूले/i,
+  bleeding: /khoon|खून|bleed|ब्लीड|rakt|रक्त|blood/i,
+  reduced_fetal_movement: /halchal|हलचल|hil|हिल|harkat|हरकत|movement|move|kick|किक|pet mein bachch|पेट में बच्च/i,
+  severe_pallor: /peel|पील|pale|safed|सफ़ेद|सफेद|pallor|chehr|चेहर|khoon ki kami|खून की कमी/i,
+  breathlessness: /saans|साँस|सांस|breath|haanf|हांफ|हाँफ|phoolti|फूलती/i,
+  heavy_bleeding: /mahwari|माहवारी|महावारी|period|पीरियड|khoon|खून|bleed|blood/i,
+};
+function hasEvidence(sign: string, verbatim: string): boolean {
+  const re = DANGER_CUES[sign];
+  return re ? re.test(verbatim) : true;
+}
+
 export function enforceGuardrails(
   raw: RawModelOutput,
   cohort: Cohort,
@@ -197,7 +215,8 @@ export function enforceGuardrails(
     const rawDanger = nested(raw, "danger_signs");
     for (const sign of DANGER_SIGNS) {
       const v = clampEnum<DangerSignStatus>(rawDanger[sign], DANGER_SIGN_VALUES);
-      note.danger_signs[sign] = v ?? "unclear";
+      note.danger_signs[sign] =
+        v === "present" && !hasEvidence(sign, verbatim) ? "unclear" : (v ?? "unclear");
     }
   } else {
     // --- adolescent (RKSK / WIFS) -----------------------------------------
@@ -244,7 +263,8 @@ export function enforceGuardrails(
     const rawDanger = nested(raw, "adolescent_danger_signs");
     for (const sign of ADOLESCENT_DANGER_SIGNS) {
       const v = clampEnum<DangerSignStatus>(rawDanger[sign], DANGER_SIGN_VALUES);
-      note.adolescent_danger_signs[sign] = v ?? "unclear";
+      note.adolescent_danger_signs[sign] =
+        v === "present" && !hasEvidence(sign, verbatim) ? "unclear" : (v ?? "unclear");
     }
   }
 
