@@ -35,3 +35,11 @@ options.png
 # private reference notes
 BUILD-NOTES.md
 voiceover/
+
+# Private / local-only files that live in this folder on the Mac
+*.pdf
+*.zip
+*.tar.gz
+WhatsApp Image*
+ASHA-Awaaz-Build-Notes*
+options.png
