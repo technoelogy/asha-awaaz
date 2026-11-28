@@ -416,3 +416,11 @@
 .aa-refs li[data-seen="true"] .aa-refs-status { color: #003153; font-weight: 600; }
 
 .aa-engine { margin: 10px 0 2px; }
+
+/* tap-to-fix any field */
+.aa-cell[role="button"] { cursor: pointer; transition: background .15s; }
+.aa-cell[role="button"]:hover { background: #f4ede1; }
+.aa-cell[data-editing="true"] { background: #fdf6ea; outline: 2px solid #efd9b3; outline-offset: -2px; }
+.aa-edit { margin-left: 4px; font-size: 0.85em; color: #8a99a8; }
+.aa-editbox { margin-top: 10px; }
+.aa-btn-sm[data-variant="ghost"] { border-width: 1.5px; border-color: #b9cddd; }

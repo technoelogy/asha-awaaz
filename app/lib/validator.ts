@@ -88,6 +88,10 @@ function nested(obj: RawModelOutput, key: string): RawModelOutput {
  * VisitNote for the given cohort. Nothing here trusts the model: every field is
  * re-derived, every value is clamped, and uncertain_fields is recomputed.
  */
+// Words that mean she actually spoke about a follow-up / next visit.
+const FOLLOW_UP_CUES =
+  /follow|फ़ॉलो|फॉलो|दोबारा|dobara|phir se|फिर से|agle|अगले|agla|अगला|bulana|बुलाना|bulaya|बुलाया|next (visit|month|week)|check.?up|चेकअप|जाँच|जांच|jaanch|jaanch|milna|मिलना|aana hai|आना है|revisit/i;
+
 export function enforceGuardrails(
   raw: RawModelOutput,
   cohort: Cohort,
@@ -121,8 +125,14 @@ export function enforceGuardrails(
   }
 
   // --- shared: follow_up ---------------------------------------------------
+  // Models tend to infer "follow-up needed" from a danger sign. Accept a value
+  // only if the transcript actually mentions a follow-up / next visit.
   const needed = followUp.needed;
-  note.follow_up.needed = typeof needed === "boolean" ? needed : null;
+  const mentionsFollowUp = FOLLOW_UP_CUES.test(verbatim);
+  note.follow_up.needed = typeof needed === "boolean" && mentionsFollowUp ? needed : null;
+  if (typeof needed === "boolean" && !mentionsFollowUp && claimedConf.follow_up !== "unclear") {
+    forcedUncertain.add("follow_up");
+  }
   note.follow_up.reason = asString(followUp.reason);
   note.follow_up.by_date = asString(followUp.by_date);
 

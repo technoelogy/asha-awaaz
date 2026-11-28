@@ -94,6 +94,7 @@ export function useVoiceCapture(
   // refs for the active capture session
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const finalTextRef = useRef("");
+  const interimTextRef = useRef("");
   const mediaRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
@@ -152,6 +153,7 @@ export function useVoiceCapture(
   const start = useCallback(async () => {
     setError(null);
     finalTextRef.current = "";
+    interimTextRef.current = "";
     chunksRef.current = [];
 
     try {
@@ -163,10 +165,13 @@ export function useVoiceCapture(
         rec.continuous = true;
         rec.interimResults = true;
         rec.onresult = (e) => {
+          let interim = "";
           for (let i = e.resultIndex; i < e.results.length; i++) {
             const r = e.results[i];
-            if (r.isFinal) finalTextRef.current += r[0].transcript;
+            if (r.isFinal) finalTextRef.current += r[0].transcript + " ";
+            else interim += r[0].transcript;
           }
+          interimTextRef.current = interim;
         };
         rec.onerror = (e) => setError(e.error || "speech_error");
         recognitionRef.current = rec;
@@ -206,12 +211,16 @@ export function useVoiceCapture(
     try {
       if (source === "browser") {
         const rec = recognitionRef.current;
+        // Final text plus any trailing words Chrome had not finalised yet
+        // (a quick tap on stop used to drop the last sentence).
+        const collect = () =>
+          `${finalTextRef.current} ${interimTextRef.current}`.replace(/\s+/g, " ").trim();
         const text = await new Promise<string>((resolve) => {
           if (!rec) return resolve("");
-          rec.onend = () => resolve(finalTextRef.current.trim());
+          rec.onend = () => resolve(collect());
           rec.stop();
           // safety: resolve even if onend never fires
-          setTimeout(() => resolve(finalTextRef.current.trim()), 1500);
+          setTimeout(() => resolve(collect()), 1500);
         });
         recognitionRef.current = null;
         setStatus("idle");

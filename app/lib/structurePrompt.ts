@@ -10,7 +10,7 @@ import { Cohort } from "./schema";
 const COMMON_RULES = `You are a careful medical-record structurer for India's ASHA (community health worker) programme. An ASHA worker has just spoken a short post-visit note in Hindi or Hinglish (code-switched Hindi + English). You convert her spoken note into a structured JSON visit-note.
 
 ABSOLUTE RULES:
-1. Transcribe and structure only. NEVER invent, infer, or guess a value. If she did not clearly say something, that field is null.
+1. Transcribe and structure only. NEVER invent, infer, or guess a value. If she did not clearly say something, that field is null. A danger sign does NOT imply follow_up: set follow_up.needed only if she talks about a follow-up or next visit.
 2. Preserve code-switching exactly as spoken in the transcript. Do not "correct" Hinglish into pure Hindi or pure English.
 3. Expect accent variation (a Bhojpuri speaker using Hindi words is normal, not an error) and background noise (baby, traffic, livestock). If noise makes ONE field unclear, mark only that field "unclear" — do not discard the rest.
 4. Never silently resolve an ambiguous value. Mark it "unclear" so she can be asked about only that field.`;
@@ -113,5 +113,5 @@ export function systemPromptForCohort(cohort: Cohort): string {
 export function buildUserMessage(verbatim: string, cohort: Cohort): string {
   const who =
     cohort === "adolescent" ? "an adolescent girl (10–19)" : "a pregnant woman (ANC)";
-  return `ASHA worker's spoken visit note for ${who} (Hindi/Hinglish, transcribed by Wispr):\n\n"""\n${verbatim}\n"""\n\nStructure it into the JSON visit-note. Remember: unstated or unclear = null + "unclear". Return only the JSON object.`;
+  return `ASHA worker's spoken visit note for ${who} (Hindi/Hinglish, from speech-to-text):\n\n"""\n${verbatim}\n"""\n\nStructure it into the JSON visit-note. Remember: unstated or unclear = null + "unclear". Return only the JSON object.`;
 }

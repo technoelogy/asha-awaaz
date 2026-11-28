@@ -171,8 +171,12 @@ export default function VisitNoteConfirm({
     [note.uncertain_fields],
   );
 
+  // Field the ASHA tapped to correct (e.g. a misheard name).
+  const [editing, setEditing] = useState<FieldName | null>(null);
+
   // Apply an explicit correction, mark the field confirmed, recompute uncertain.
   function apply(f: FieldName, value: string | null) {
+    setEditing(null);
     const next: VisitNote = structuredClone(note);
     if (value !== null && !writeField(next, f, value)) return; // invalid -> stay uncertain
     next.field_confidence[f] = "high";
@@ -245,18 +249,45 @@ export default function VisitNoteConfirm({
         </ul>
       )}
 
-      {/* Clear fields: compact two-column grid, read at a glance. */}
+      {/* Clear fields: compact grid. Tap any cell to correct a mis-hear. */}
       <dl className="aa-grid">
         {clearFields.map((f) => {
           const set = isFieldSet(note, f);
           return (
-            <div key={f} className="aa-cell">
-              <dt>{FIELD_LABEL_EN[f]}</dt>
+            <div
+              key={f}
+              className="aa-cell"
+              role="button"
+              tabIndex={0}
+              data-editing={editing === f}
+              aria-label={`Correct ${FIELD_LABEL_EN[f]}`}
+              onClick={() => setEditing(editing === f ? null : f)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") setEditing(editing === f ? null : f);
+              }}
+            >
+              <dt>
+                {FIELD_LABEL_EN[f]} <span className="aa-edit">✎</span>
+              </dt>
               <dd data-empty={!set}>{set ? fieldValueHi(note, f) : "—"}</dd>
             </div>
           );
         })}
       </dl>
+      {editing && !uncertain.has(editing) && (
+        <div className="aa-fieldrow aa-editbox" data-uncertain="true">
+          <div className="aa-fl">{FIELD_LABEL_EN[editing]} · ठीक कीजिए</div>
+          <FieldFixer
+            key={editing}
+            field={editing}
+            hasValue={isFieldSet(note, editing)}
+            apply={apply}
+          />
+        </div>
+      )}
+      <p className="aa-hint" style={{ textAlign: "left" }}>
+        कुछ गलत सुना गया? उस खाने पर टैप करके ठीक कीजिए।
+      </p>
 
       <DangerSignsBlock note={note} onChange={onChange} />
 
@@ -329,6 +360,7 @@ function FieldFixer({
               key={o.value}
               type="button"
               className="aa-btn aa-btn-sm"
+              data-variant="ghost"
               onClick={() => apply(field, o.value)}
             >
               {o.label}
@@ -342,6 +374,7 @@ function FieldFixer({
           <button
             type="button"
             className="aa-btn aa-btn-sm"
+            data-variant="ghost"
             onClick={() => apply(field, "true")}
           >
             ज़रूरी है
