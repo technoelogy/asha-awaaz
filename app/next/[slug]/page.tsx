@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PreviewShell from "../PreviewShell";
+import Character from "../../landing/Characters";
 import { PREVIEWS, previewBySlug } from "../../lib/previews";
 
 export function generateStaticParams() {
@@ -24,7 +25,11 @@ export default async function PreviewPage({ params }: { params: Promise<{ slug: 
     <PreviewShell>
       <div className="aa-card">
         <div className="nx-head">
-          <span className="aa-cohort-emoji" aria-hidden="true">{p.emoji}</span>
+          {p.character ? (
+            <Character name={p.character} size={64} className="nx-char" />
+          ) : (
+            <span className="aa-cohort-emoji" aria-hidden="true">{p.emoji}</span>
+          )}
           <div>
             <h1 className="aa-h1">{p.title}</h1>
             <p className="nx-en">{p.titleEn}</p>

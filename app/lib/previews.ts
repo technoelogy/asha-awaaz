@@ -15,6 +15,7 @@ export interface PreviewField {
 export interface CohortPreview {
   slug: "ncd" | "pnc" | "hbyc";
   emoji: string;
+  character?: "woman" | "pregnant" | "girl"; // illustration, if one exists
   title: string; // Hindi
   titleEn: string;
   programme: string; // official programme + form
@@ -30,6 +31,7 @@ export const PREVIEWS: CohortPreview[] = [
   {
     slug: "ncd",
     emoji: "👩",
+    character: "woman",
     title: "30+ महिला",
     titleEn: "Women 30+ · NCD risk check",
     programme: "NP-NCD · CBAC form (Community Based Assessment Checklist), MoHFW",
