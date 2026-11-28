@@ -216,6 +216,14 @@ export default function VisitNoteConfirm({
           : "सब साफ़ है। पुष्टि कीजिए।"}
       </p>
 
+      {/* What the engine actually heard: lets her spot a dropped "nahi". */}
+      {note.transcript?.verbatim && (
+        <details className="aa-heard">
+          <summary>सुनी गई बात देखें · what was heard</summary>
+          <p dir="auto">{note.transcript.verbatim}</p>
+        </details>
+      )}
+
       {/* Danger first: the referral is the most important thing on screen. */}
       {present.length > 0 && (
         <div className="aa-refer" role="alert">

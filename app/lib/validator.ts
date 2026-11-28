@@ -92,6 +92,19 @@ function nested(obj: RawModelOutput, key: string): RawModelOutput {
 const FOLLOW_UP_CUES =
   /follow|फ़ॉलो|फॉलो|दोबारा|dobara|phir se|फिर से|agle|अगले|agla|अगला|bulana|बुलाना|bulaya|बुलाया|next (visit|month|week)|check.?up|चेकअप|जाँच|जांच|jaanch|jaanch|milna|मिलना|aana hai|आना है|revisit/i;
 
+// Negation next to an iron / IFA mention ("goli nahi le rahi", "आयरन नहीं").
+// If the transcript says "not" but the model says "taking", they contradict:
+// clear the field and ask her, never pick one.
+const IRON_WORD = "(iron|आयरन|goli|गोली|tablet|टैबलेट|ifa|blue|नीली|लाल)";
+const NEG_WORD = "(nahi|nahin|नहीं|नही|na |ना |mat|मत|band|बंद|chhod|छोड़)";
+const IRON_NEGATED = new RegExp(
+  `${IRON_WORD}[^.।\\n]{0,30}${NEG_WORD}|${NEG_WORD}[^.।\\n]{0,15}${IRON_WORD}`,
+  "i",
+);
+function contradictsTaking(value: string | null, verbatim: string): boolean {
+  return value === "taking" && IRON_NEGATED.test(verbatim);
+}
+
 export function enforceGuardrails(
   raw: RawModelOutput,
   cohort: Cohort,
@@ -172,6 +185,10 @@ export function enforceGuardrails(
     if (iron === null && assessment.iron_compliance != null && claimedConf.iron_compliance !== "unclear") {
       forcedUncertain.add("iron_compliance");
     }
+    if (contradictsTaking(iron, verbatim)) {
+      note.assessment.iron_compliance = null;
+      forcedUncertain.add("iron_compliance");
+    }
     note.assessment.iron_compliance_verbatim = asString(
       assessment.iron_compliance_verbatim,
     );
@@ -206,6 +223,10 @@ export function enforceGuardrails(
     a.ifa_compliance = clampEnum<Exclude<IronCompliance, null>>(ado.ifa_compliance, IRON_COMPLIANCE_VALUES);
     if (a.ifa_compliance === null && ado.ifa_compliance != null && claimedConf.ifa_compliance !== "unclear")
       forcedUncertain.add("ifa_compliance");
+    if (contradictsTaking(a.ifa_compliance, verbatim)) {
+      a.ifa_compliance = null;
+      forcedUncertain.add("ifa_compliance");
+    }
 
     a.albendazole = clampEnum<Exclude<AlbendazoleStatus, null>>(ado.albendazole, ALBENDAZOLE_VALUES);
     if (a.albendazole === null && ado.albendazole != null && claimedConf.albendazole !== "unclear")
