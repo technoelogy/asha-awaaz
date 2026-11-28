@@ -1,9 +1,9 @@
 {
-  "run_at": "2026-11-28T13:02:15.170Z",
+  "run_at": "2026-11-28T13:19:56.328Z",
   "mode": "guards",
   "base_url": null,
-  "passed": 15,
-  "total": 15,
+  "passed": 23,
+  "total": 23,
   "rows": [
     {
       "id": "G2-followup-inferred",
@@ -37,14 +37,14 @@
       "id": "G8-goli-misheard",
       "why": "Engine wrote गली for goli; the negation still sits next to आयरन",
       "pass": true,
-      "ms": 0,
+      "ms": 1,
       "misses": []
     },
     {
       "id": "G9-invented-danger-sign",
       "why": "AI flagged reduced baby movement; nobody spoke of movement",
       "pass": true,
-      "ms": 1,
+      "ms": 0,
       "misses": []
     },
     {
@@ -72,7 +72,7 @@
       "id": "G11-nutrition-inferred",
       "why": "AI called her 'thin' from pallor; nutrition was never discussed",
       "pass": true,
-      "ms": 1,
+      "ms": 0,
       "misses": []
     },
     {
@@ -106,6 +106,62 @@
     {
       "id": "G7-nothing-captured",
       "why": "Reel noise / garbage: model returns nothing. Nothing may be invented",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "input-mash-short",
+      "why": "block: \"asdfgh\"",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "input-mash-long",
+      "why": "block: \"asdf jkl qwrt zxcv bnm\"",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "input-repeat-noise",
+      "why": "block: \"aaaaaa hhhhhh mmmmmm\"",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "input-lone-name",
+      "why": "block: \"Phoolmati\"",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "input-short-real",
+      "why": "let through: \"Sunita 24 saal\"",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "input-hinglish-note",
+      "why": "let through: \"Rekha, 22 saal, 18 hafte. Iron ki goli nahi le rahi.\"",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "input-pure-hindi",
+      "why": "let through: \"कमला, उम्र पच्चीस साल, बीस हफ्ते।\"",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "input-garbled-but-real",
+      "why": "let through: \"Phoolmati 26 sal tees hafte sir dard\"",
       "pass": true,
       "ms": 0,
       "misses": []

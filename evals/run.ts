@@ -9,7 +9,8 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { enforceGuardrails } from "../app/lib/validator";
 import type { VisitNote } from "../app/lib/schema";
-import { GUARD_CASES, LIVE_CASES, type EvalCase } from "./cases";
+import { checkTranscript } from "../app/lib/inputCheck";
+import { GUARD_CASES, LIVE_CASES, INPUT_CASES, type EvalCase } from "./cases";
 
 const live = process.argv.includes("--live");
 const BASE_URL = (process.env.BASE_URL || "https://asha-awaaz.vercel.app").replace(/\/$/, "");
@@ -65,6 +66,16 @@ async function main() {
     const r = rows[rows.length - 1];
     console.log(`${r.pass ? "✅" : "❌"} ${r.id.padEnd(28)} ${live ? `${r.ms} ms`.padStart(8) : ""}  ${r.why}`);
     for (const m of r.misses) console.log(`     ↳ ${m}`);
+  }
+
+  if (!live) {
+    console.log("\nInput check (before the AI)");
+    for (const c of INPUT_CASES) {
+      const v = checkTranscript(c.text);
+      const pass = v.ok === c.ok;
+      rows.push({ id: `input-${c.id}`, why: `${c.ok ? "let through" : "block"}: "${c.text}"`, pass, ms: 0, misses: pass ? [] : [`want ok=${c.ok}, got ok=${v.ok}`] });
+      console.log(`${pass ? "✅" : "❌"} input-${c.id.padEnd(22)} ${c.ok ? "let through" : "block"}: "${c.text}"`);
+    }
   }
 
   const passed = rows.filter((r) => r.pass).length;

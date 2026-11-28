@@ -237,3 +237,15 @@ export const LIVE_CASES: EvalCase[] = [
     expect: { "adolescent_danger_signs.heavy_bleeding": "present" },
   },
 ];
+
+// Input check (before the AI): text that must be blocked vs. let through.
+export const INPUT_CASES: { id: string; text: string; ok: boolean }[] = [
+  { id: "mash-short", text: "asdfgh", ok: false },
+  { id: "mash-long", text: "asdf jkl qwrt zxcv bnm", ok: false },
+  { id: "repeat-noise", text: "aaaaaa hhhhhh mmmmmm", ok: false },
+  { id: "lone-name", text: "Phoolmati", ok: false },
+  { id: "short-real", text: "Sunita 24 saal", ok: true },
+  { id: "hinglish-note", text: "Rekha, 22 saal, 18 hafte. Iron ki goli nahi le rahi.", ok: true },
+  { id: "pure-hindi", text: "कमला, उम्र पच्चीस साल, बीस हफ्ते।", ok: true },
+  { id: "garbled-but-real", text: "Phoolmati 26 sal tees hafte sir dard", ok: true },
+];

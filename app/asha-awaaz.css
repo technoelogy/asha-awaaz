@@ -442,3 +442,25 @@
 .aa-refs-flag { margin: 0; font-size: 0.8rem; font-weight: 700; color: #ca2325; }
 .aa-refs-remind { justify-self: start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 999px; background: #003153; color: #fff !important; font-size: 0.82rem; font-weight: 700; text-decoration: none; }
 .aa-refs-note { margin: 8px 0 0; font-size: 0.72rem; color: #4d5d6c; }
+
+/* --- 4-step progress strip: light -> dark Prussian ------------------- */
+.aa-steps {
+  list-style: none; margin: 0 0 14px; padding: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+}
+.aa-step {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 7px 2px 6px; border-radius: 10px; font-size: 0.74rem; font-weight: 600;
+  background: transparent; color: var(--aa-muted); border: 1px dashed var(--aa-line);
+}
+.aa-step-num {
+  width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 0.7rem; font-weight: 800; background: #fff; border: 1px solid var(--aa-line);
+}
+.aa-step[data-state="done"], .aa-step[data-state="now"] { border-style: solid; border-color: transparent; }
+.aa-step[data-step="0"]:not([data-state="next"]) { background: #d6e3ee; color: #002640; }
+.aa-step[data-step="1"]:not([data-state="next"]) { background: #8fb0cc; color: #002640; }
+.aa-step[data-step="2"]:not([data-state="next"]) { background: #2f5f86; color: #fff; }
+.aa-step[data-step="3"]:not([data-state="next"]) { background: #003153; color: #fff; }
+.aa-step:not([data-state="next"]) .aa-step-num { background: rgba(255,255,255,0.85); border-color: transparent; color: #003153; }
+.aa-step[data-state="now"] { box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px #003153; }

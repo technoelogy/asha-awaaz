@@ -18,6 +18,7 @@ import {
   buildUserMessage,
 } from "../../lib/structurePrompt";
 import { getMockSample } from "../../lib/mockData";
+import { checkTranscript } from "../../lib/inputCheck";
 import { VisitLanguage, Cohort } from "../../lib/schema";
 
 export const runtime = "nodejs";
@@ -121,6 +122,11 @@ export async function POST(req: Request) {
     const verbatim = body.transcript?.trim();
     if (!verbatim) {
       return Response.json({ error: "empty_transcript" }, { status: 400 });
+    }
+    // Same check as the browser: don't spend an AI call on mash or noise.
+    const verdict = checkTranscript(verbatim);
+    if (!verdict.ok) {
+      return Response.json({ error: verdict.reason, detail: verdict.message }, { status: 422 });
     }
     const raw = await callAnthropic(verbatim, cohort);
     const visitNote = enforceGuardrails(raw, cohort, language, verbatim);

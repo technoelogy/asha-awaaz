@@ -9,6 +9,7 @@
 // sample chips still work. Nothing downstream of the transcript changes.
 "use client";
 
+import { checkTranscript } from "../lib/inputCheck";
 import { useEffect, useRef, useState } from "react";
 import { VisitLanguage, Cohort } from "../lib/schema";
 import { MOCK_SAMPLES } from "../lib/mockData";
@@ -47,6 +48,7 @@ export default function MicCapture({
   const [transcript, setTranscript] = useState("");
   const [language, setLanguage] = useState<VisitLanguage>("hi-en");
   const [sampleId, setSampleId] = useState<string | undefined>(undefined);
+  const [inputError, setInputError] = useState<string | null>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
   // Sarvam takes ≤30 s per request; the hook auto-stops and hands back the text.
   const voice = useVoiceCapture(language, (text) => {
@@ -110,11 +112,27 @@ export default function MicCapture({
   function handleSample(id: string, text: string) {
     setTranscript(text);
     setSampleId(id);
+    setInputError(null);
   }
 
   function handleEdit(v: string) {
     setTranscript(v);
     setSampleId(undefined);
+    setInputError(null);
+  }
+
+  // Block keyboard mash / noise before the AI is called (samples skip this).
+  function submit() {
+    const text = transcript.trim();
+    if (!sampleId) {
+      const verdict = checkTranscript(text);
+      if (!verdict.ok) {
+        setInputError(verdict.message);
+        return;
+      }
+    }
+    setInputError(null);
+    onStructure({ transcript: text, language, mockSampleId: sampleId });
   }
 
   const canStructure = transcript.trim().length > 0 && !busy && !transcribing;
@@ -150,7 +168,7 @@ export default function MicCapture({
   return (
     <div className="aa-card">
       <h1 className="aa-h1">नई विज़िट दर्ज करें</h1>
-      <p className="aa-sub">बस बोलिए, टाइप मत कीजिए।</p>
+      <p className="aa-sub">बस बोलिए। ज़रूरत हो तो नीचे लिख भी सकती हैं।</p>
 
       {demoFirst && samplesBlock}
 
@@ -231,12 +249,15 @@ export default function MicCapture({
         type="button"
         className="aa-btn"
         disabled={!canStructure}
-        onClick={() =>
-          onStructure({ transcript: transcript.trim(), language, mockSampleId: sampleId })
-        }
+        onClick={submit}
       >
         {busy ? "समझ रहे हैं…" : "समझें और जाँचें →"}
       </button>
+      {inputError && (
+        <p className="aa-error" role="alert">
+          {inputError}
+        </p>
+      )}
       {!canStructure && !busy && (
         <p className="aa-hint">
           {demoFirst

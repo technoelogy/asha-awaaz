@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import MicCapture from "./components/MicCapture";
 import VisitNoteConfirm from "./components/VisitNoteConfirm";
 import CohortPicker from "./components/CohortPicker";
+import ProgressStrip from "./components/ProgressStrip";
 import ReferralStatus from "./components/ReferralStatus";
 import { VisitNote, VisitLanguage, Cohort } from "./lib/schema";
 import { structureTranscript } from "./lib/client";
@@ -143,6 +144,12 @@ export default function AshaAwaazApp() {
             speech, set <code>ANTHROPIC_API_KEY</code> (see README).
           </p>
         )}
+
+        <ProgressStrip
+          current={
+            stage === "picker" ? 0 : stage === "capture" ? 1 : stage === "saved" ? 3 : 2
+          }
+        />
 
         {stage === "picker" && <CohortPicker onPick={pickCohort} />}
         {stage === "picker" && <ReferralStatus />}
