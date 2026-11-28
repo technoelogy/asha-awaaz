@@ -404,3 +404,13 @@
 
 /* Odd number of grid cells: last one spans the row (no empty grey cell). */
 .aa-cell:last-child:nth-child(odd) { grid-column: span 2; }
+
+/* ASHA's referral loop */
+.aa-refs { margin-top: 12px; }
+.aa-refs-title { margin: 0 0 8px; font-weight: 800; }
+.aa-refs-title span { font-weight: 400; color: var(--aa-muted, #4d5d6c); font-size: 0.85em; }
+.aa-refs ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.aa-refs li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid #f0c9c4; background: #fdf3f1; }
+.aa-refs li[data-seen="true"] { border-color: #b9cddd; background: #e8f0f6; }
+.aa-refs-status { font-size: 0.85rem; color: #ca2325; white-space: nowrap; }
+.aa-refs li[data-seen="true"] .aa-refs-status { color: #003153; font-weight: 600; }

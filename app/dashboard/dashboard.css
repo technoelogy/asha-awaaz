@@ -184,3 +184,9 @@
 }
 .phc-cohort[data-cohort="pregnant"] { background: #eaf4ff; color: #1e5a9e; }
 .phc-cohort[data-cohort="adolescent"] { background: #f3eaff; color: #6b3fa0; }
+
+/* referral acknowledgement + export */
+.phc-btn-primary { background: #003153; color: #fff !important; border-color: #003153; text-decoration: none; display: inline-flex; align-items: center; }
+.phc-ack { min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1.5px solid #ca2325; background: #fff; color: #ca2325; font: inherit; font-weight: 700; font-size: 0.82rem; cursor: pointer; white-space: nowrap; }
+.phc-ack:hover:not(:disabled) { background: #ca2325; color: #fff; }
+.phc-ack:disabled { opacity: 0.55; cursor: default; }

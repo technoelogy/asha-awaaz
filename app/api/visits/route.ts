@@ -1,4 +1,5 @@
 // ASHA Awaaz — visit persistence.  POST /api/visits (save)  ·  GET /api/visits (list)
+//                                   PATCH /api/visits (PHC acknowledges a referral)
 //
 // The database seam. Inserts go through here (server-side) so the Supabase key
 // never reaches the browser — same pattern as the Anthropic and Wispr keys.
@@ -101,5 +102,46 @@ export async function GET() {
   } catch (err) {
     const message = err instanceof Error ? err.message : "list_failed";
     return Response.json({ error: "list_failed", detail: message }, { status: 502 });
+  }
+}
+
+// PHC marks a referral as seen. Stored inside the record jsonb
+// (record.referral.acknowledged_at) so no schema migration is needed.
+export async function PATCH(req: Request) {
+  let body: { id?: string };
+  try {
+    body = (await req.json()) as { id?: string };
+  } catch {
+    return Response.json({ error: "invalid_json" }, { status: 400 });
+  }
+  const id = body.id;
+  if (!id || !/^[0-9a-f-]{8,64}$/i.test(id)) {
+    return Response.json({ error: "missing_or_bad_id" }, { status: 400 });
+  }
+  const cfg = config();
+  if (!cfg) return Response.json({ mode: "local", acknowledged: false });
+
+  const headers = { apikey: cfg.key, authorization: `Bearer ${cfg.key}` };
+  try {
+    const get = await fetch(`${cfg.url}/rest/v1/visit_notes?id=eq.${id}&select=record`, { headers });
+    if (!get.ok) return Response.json({ error: "lookup_failed" }, { status: 502 });
+    const found = (await get.json()) as { record: Record<string, unknown> | null }[];
+    if (!found.length) return Response.json({ error: "not_found" }, { status: 404 });
+
+    const acknowledged_at = new Date().toISOString();
+    const record = { ...(found[0].record ?? {}), referral: { acknowledged_at, acknowledged_by: "PHC" } };
+    const upd = await fetch(`${cfg.url}/rest/v1/visit_notes?id=eq.${id}`, {
+      method: "PATCH",
+      headers: { ...headers, "content-type": "application/json", prefer: "return=minimal" },
+      body: JSON.stringify({ record }),
+    });
+    if (!upd.ok) {
+      const detail = await upd.text().catch(() => "");
+      return Response.json({ error: "update_failed", detail: detail.slice(0, 300) }, { status: 502 });
+    }
+    return Response.json({ mode: "live", acknowledged: true, acknowledged_at });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "ack_failed";
+    return Response.json({ error: "ack_failed", detail: message }, { status: 502 });
   }
 }

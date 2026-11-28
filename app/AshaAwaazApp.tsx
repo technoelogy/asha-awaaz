@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import MicCapture from "./components/MicCapture";
 import VisitNoteConfirm from "./components/VisitNoteConfirm";
 import CohortPicker from "./components/CohortPicker";
+import ReferralStatus from "./components/ReferralStatus";
 import { VisitNote, VisitLanguage, Cohort } from "./lib/schema";
 import { structureTranscript } from "./lib/client";
 import { enqueue, pendingCount, isOnline, drain } from "./lib/queue";
@@ -144,6 +145,7 @@ export default function AshaAwaazApp() {
         )}
 
         {stage === "picker" && <CohortPicker onPick={pickCohort} />}
+        {stage === "picker" && <ReferralStatus />}
 
         {stage === "capture" && (
           <>

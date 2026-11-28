@@ -32,6 +32,7 @@ interface VisitRow {
     adolescent?: { ifa_compliance?: string | null; pallor?: string | null };
     danger_signs?: Record<string, string>;
     adolescent_danger_signs?: Record<string, string>;
+    referral?: { acknowledged_at?: string };
   } | null;
 }
 
@@ -146,11 +147,39 @@ export default function DashboardPage() {
     };
   }, []);
 
+  const [acking, setAcking] = useState<string | null>(null);
+
+  // PHC acknowledges a referral; update the row in place on success.
+  const acknowledge = useCallback(async (id: string) => {
+    setAcking(id);
+    try {
+      const res = await fetch("/api/visits", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const data = (await res.json()) as { acknowledged?: boolean; acknowledged_at?: string };
+      if (data.acknowledged && data.acknowledged_at) {
+        const at = data.acknowledged_at;
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === id ? { ...r, record: { ...(r.record ?? {}), referral: { acknowledged_at: at } } } : r,
+          ),
+        );
+      }
+    } finally {
+      setAcking(null);
+    }
+  }, []);
+
   const total = rows.length;
   const danger = rows.filter((r) => presentDangers(r).length > 0).length;
   const highBp = rows.filter((r) => r.bp_status === "high").length;
   const noIron = rows.filter((r) => ironStatus(r) === "not_taking").length;
   const followUps = rows.filter((r) => r.follow_up_needed === true).length;
+  const waiting = rows.filter(
+    (r) => presentDangers(r).length > 0 && !r.record?.referral?.acknowledged_at,
+  ).length;
 
   return (
     <div className="phc-root">
@@ -158,7 +187,7 @@ export default function DashboardPage() {
         <header className="phc-top">
           <div>
             <h1 className="phc-title">PHC Dashboard</h1>
-            <p className="phc-sub">ASHA visit log · maternal & adolescent health</p>
+            <p className="phc-sub">Primary Health Centre · ASHA visit log · maternal & adolescent health</p>
           </div>
           <div className="phc-actions">
             <span className="phc-chip" data-state={state}>
@@ -174,11 +203,15 @@ export default function DashboardPage() {
             <button type="button" className="phc-btn" onClick={load}>
               ↻ Refresh
             </button>
+            <a className="phc-btn phc-btn-primary" href="/api/export" download>
+              ⬇ Export register (CSV)
+            </a>
           </div>
         </header>
 
         <section className="phc-tiles">
           <Tile label="Visits logged" value={total} />
+          <Tile label="Referrals waiting" value={waiting} tone={waiting ? "warn" : "ok"} />
           <Tile label="Danger signs" value={danger} tone={danger ? "warn" : "ok"} />
           <Tile label="High BP" value={highBp} tone={highBp ? "warn" : "ok"} />
           <Tile label="Iron/IFA not taken" value={noIron} tone={noIron ? "warn" : "ok"} />
@@ -200,6 +233,7 @@ export default function DashboardPage() {
                   <th>Beneficiary</th>
                   <th>For</th>
                   <th>Danger signs</th>
+                  <th>Referral</th>
                   <th>Detail</th>
                   <th>Iron / IFA</th>
                   <th>Follow-up</th>
@@ -235,6 +269,24 @@ export default function DashboardPage() {
                           </span>
                         ) : (
                           <span className="phc-muted">—</span>
+                        )}
+                      </td>
+                      <td>
+                        {dangers.length === 0 ? (
+                          <span className="phc-muted">—</span>
+                        ) : r.record?.referral?.acknowledged_at ? (
+                          <span className="phc-pill" data-tone="ok">
+                            ✓ Seen {fmtDate(r.record.referral.acknowledged_at)}
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            className="phc-ack"
+                            disabled={acking === r.id || state !== "live"}
+                            onClick={() => acknowledge(r.id)}
+                          >
+                            {acking === r.id ? "Saving…" : "Mark seen"}
+                          </button>
                         )}
                       </td>
                       <td>{detailOf(r)}</td>

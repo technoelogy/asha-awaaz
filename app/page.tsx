@@ -115,12 +115,12 @@ const SYSTEM: {
       {
         name: "Referral acknowledged",
         note: "The health centre marks a referral seen. The ASHA knows it landed.",
-        status: "next",
+        status: "live",
       },
       {
         name: "Export in the register's fields",
         note: "Records in the government's mother-and-child register format (RCH), so nothing is typed twice.",
-        status: "next",
+        status: "live",
       },
       {
         name: "Alert to the nurse and doctor",
@@ -350,7 +350,9 @@ export default function Home() {
           From the doorstep <em>to the district.</em>
         </h2>
         <div className="ln-legend">
-          {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
+          {(Object.keys(STATUS_LABEL) as Status[])
+            .filter((s) => SYSTEM.some((c) => c.items.some((i) => i.status === s)))
+            .map((s) => (
             <span key={s} className="ln-pill" data-s={s}>
               {STATUS_LABEL[s]}
             </span>
