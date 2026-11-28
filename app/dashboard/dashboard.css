@@ -190,3 +190,6 @@
 .phc-ack { min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1.5px solid #ca2325; background: #fff; color: #ca2325; font: inherit; font-weight: 700; font-size: 0.82rem; cursor: pointer; white-space: nowrap; }
 .phc-ack:hover:not(:disabled) { background: #ca2325; color: #fff; }
 .phc-ack:disabled { opacity: 0.55; cursor: default; }
+.phc-wait { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.phc-age { font-size: 0.78rem; color: #a15c0b; white-space: nowrap; }
+.phc-age[data-overdue="true"] { color: #ca2325; font-weight: 700; }

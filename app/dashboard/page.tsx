@@ -13,6 +13,7 @@ import "@fontsource/mukta/400.css";
 import "@fontsource/mukta/600.css";
 import "@fontsource/mukta/800.css";
 import "./dashboard.css";
+import { OVERDUE_HOURS, hoursWaiting, nameKey, unseenCountByName, waitTextEn } from "../lib/referrals";
 
 type Cohort = "pregnant" | "adolescent";
 
@@ -115,6 +116,7 @@ function fmtDate(iso: string): string {
 export default function DashboardPage() {
   const [rows, setRows] = useState<VisitRow[]>([]);
   const [state, setState] = useState<LoadState>("loading");
+  const [now, setNow] = useState(0);
 
   const load = useCallback(async () => {
     setState("loading");
@@ -122,6 +124,7 @@ export default function DashboardPage() {
       const res = await fetch("/api/visits", { cache: "no-store" });
       const data = (await res.json()) as { mode?: string; visits?: VisitRow[] };
       setRows(data.visits ?? []);
+      setNow(Date.now());
       setState(data.mode === "live" ? "live" : "local");
     } catch {
       setState("error");
@@ -137,6 +140,7 @@ export default function DashboardPage() {
       .then((data: { mode?: string; visits?: VisitRow[] }) => {
         if (!active) return;
         setRows(data.visits ?? []);
+        setNow(Date.now());
         setState(data.mode === "live" ? "live" : "local");
       })
       .catch(() => {
@@ -177,9 +181,12 @@ export default function DashboardPage() {
   const highBp = rows.filter((r) => r.bp_status === "high").length;
   const noIron = rows.filter((r) => ironStatus(r) === "not_taking").length;
   const followUps = rows.filter((r) => r.follow_up_needed === true).length;
-  const waiting = rows.filter(
+  const waitingRows = rows.filter(
     (r) => presentDangers(r).length > 0 && !r.record?.referral?.acknowledged_at,
-  ).length;
+  );
+  const waiting = waitingRows.length;
+  const overdue = waitingRows.filter((r) => hoursWaiting(r, now) >= OVERDUE_HOURS).length;
+  const repeats = unseenCountByName(rows);
 
   return (
     <div className="phc-root">
@@ -212,6 +219,7 @@ export default function DashboardPage() {
         <section className="phc-tiles">
           <Tile label="Visits logged" value={total} />
           <Tile label="Referrals waiting" value={waiting} tone={waiting ? "warn" : "ok"} />
+          <Tile label={`Overdue (>${OVERDUE_HOURS}h)`} value={overdue} tone={overdue ? "warn" : "ok"} />
           <Tile label="Danger signs" value={danger} tone={danger ? "warn" : "ok"} />
           <Tile label="High BP" value={highBp} tone={highBp ? "warn" : "ok"} />
           <Tile label="Iron/IFA not taken" value={noIron} tone={noIron ? "warn" : "ok"} />
@@ -279,6 +287,18 @@ export default function DashboardPage() {
                             ✓ Seen {fmtDate(r.record.referral.acknowledged_at)}
                           </span>
                         ) : (
+                          <div className="phc-wait">
+                          <span
+                            className="phc-age"
+                            data-overdue={hoursWaiting(r, now) >= OVERDUE_HOURS}
+                          >
+                            waiting {waitTextEn(hoursWaiting(r, now))}
+                          </span>
+                          {(repeats.get(nameKey(r)) ?? 0) >= 2 && (
+                            <span className="phc-pill" data-tone="warn">
+                              Repeat ×{repeats.get(nameKey(r))}
+                            </span>
+                          )}
                           <button
                             type="button"
                             className="phc-ack"
@@ -287,6 +307,7 @@ export default function DashboardPage() {
                           >
                             {acking === r.id ? "Saving…" : "Mark seen"}
                           </button>
+                          </div>
                         )}
                       </td>
                       <td>{detailOf(r)}</td>

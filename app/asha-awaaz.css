@@ -410,10 +410,15 @@
 .aa-refs-title { margin: 0 0 8px; font-weight: 800; }
 .aa-refs-title span { font-weight: 400; color: var(--aa-muted, #4d5d6c); font-size: 0.85em; }
 .aa-refs ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.aa-refs li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid #f0c9c4; background: #fdf3f1; }
-.aa-refs li[data-seen="true"] { border-color: #b9cddd; background: #e8f0f6; }
+.aa-refs li { display: grid; gap: 6px; padding: 10px 12px; border-radius: 12px; border: 1px solid #f0c9c4; background: #fdf3f1; }
+.aa-refs-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.aa-refs li[data-state="seen"] { border-color: #b9cddd; background: #e8f0f6; }
+.aa-refs li[data-state="waiting"] { border-color: #efd9b3; background: #fdf6ea; }
+.aa-refs li[data-state="overdue"] { border-color: #ca2325; background: #fdf3f1; }
 .aa-refs-status { font-size: 0.85rem; color: #ca2325; white-space: nowrap; }
-.aa-refs li[data-seen="true"] .aa-refs-status { color: #003153; font-weight: 600; }
+.aa-refs li[data-state="seen"] .aa-refs-status { color: #003153; font-weight: 600; }
+.aa-refs li[data-state="waiting"] .aa-refs-status { color: #a15c0b; }
+.aa-refs li[data-state="overdue"] .aa-refs-status { color: #ca2325; font-weight: 700; }
 
 .aa-engine { margin: 10px 0 2px; }
 
@@ -431,3 +436,7 @@
 .aa-heard p { margin: 0; padding: 0 12px 12px; font-size: 0.88rem; line-height: 1.6; color: #0b2238; }
 .aa-refs-who { display: grid; gap: 2px; min-width: 0; }
 .aa-refs-who small { font-size: 0.75rem; color: #4d5d6c; }
+.aa-refs-count { margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: #ca2325; color: #fff; font-style: normal; font-size: 0.72rem; font-weight: 700; vertical-align: middle; }
+.aa-refs-flag { margin: 0; font-size: 0.8rem; font-weight: 700; color: #ca2325; }
+.aa-refs-remind { justify-self: start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 999px; background: #003153; color: #fff !important; font-size: 0.82rem; font-weight: 700; text-decoration: none; }
+.aa-refs-note { margin: 8px 0 0; font-size: 0.72rem; color: #4d5d6c; }
