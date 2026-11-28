@@ -1,22 +1,22 @@
 {
-  "run_at": "2026-11-28T13:19:56.328Z",
+  "run_at": "2026-11-28T13:24:36.972Z",
   "mode": "guards",
   "base_url": null,
-  "passed": 23,
-  "total": 23,
+  "passed": 29,
+  "total": 29,
   "rows": [
     {
       "id": "G2-followup-inferred",
       "why": "AI guessed a follow-up from a danger sign; she never said it",
       "pass": true,
-      "ms": 1,
+      "ms": 8,
       "misses": []
     },
     {
       "id": "followup-spoken",
       "why": "A follow-up she did say must be kept",
       "pass": true,
-      "ms": 0,
+      "ms": 1,
       "misses": []
     },
     {
@@ -162,6 +162,48 @@
     {
       "id": "input-garbled-but-real",
       "why": "let through: \"Phoolmati 26 sal tees hafte sir dard\"",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "continuity-week-mismatch",
+      "why": "28 wk on 12 Nov, says 22 on 28 Nov → ask (expect 30)",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "continuity-week-consistent",
+      "why": "28 wk + 16 days, says 30 → no question",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "continuity-week-within-slack",
+      "why": "says 31 (1 off) → no question",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "continuity-name-case-space",
+      "why": "'phoolmati ' matches 'Phoolmati'",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "continuity-age-went-down",
+      "why": "26 last time, says 24 → ask",
+      "pass": true,
+      "ms": 0,
+      "misses": []
+    },
+    {
+      "id": "continuity-first-visit",
+      "why": "No earlier visit → nothing to compare",
       "pass": true,
       "ms": 0,
       "misses": []

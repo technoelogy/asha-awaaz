@@ -249,3 +249,21 @@ export const INPUT_CASES: { id: string; text: string; ok: boolean }[] = [
   { id: "pure-hindi", text: "कमला, उम्र पच्चीस साल, बीस हफ्ते।", ok: true },
   { id: "garbled-but-real", text: "Phoolmati 26 sal tees hafte sir dard", ok: true },
 ];
+
+// Cross-visit check: same woman, earlier visit on record.
+const PAST = [
+  { id: "p1", created_at: "2026-11-12T10:00:00Z", beneficiary_name: "Phoolmati", gestational_week: 28,
+    record: { cohort: "pregnant", beneficiary: { age: { value: 26 } } } },
+];
+export const CONTINUITY_CASES: {
+  id: string; why: string; name: string; week: number | null; age: number | null;
+  flags: string[]; expectedWeek?: number;
+}[] = [
+  { id: "week-mismatch", why: "28 wk on 12 Nov, says 22 on 28 Nov → ask (expect 30)", name: "Phoolmati", week: 22, age: 26, flags: ["gestational_week"], expectedWeek: 30 },
+  { id: "week-consistent", why: "28 wk + 16 days, says 30 → no question", name: "Phoolmati", week: 30, age: 26, flags: [] },
+  { id: "week-within-slack", why: "says 31 (1 off) → no question", name: "Phoolmati", week: 31, age: 26, flags: [] },
+  { id: "name-case-space", why: "'phoolmati ' matches 'Phoolmati'", name: " phoolmati ", week: 22, age: 26, flags: ["gestational_week"] },
+  { id: "age-went-down", why: "26 last time, says 24 → ask", name: "Phoolmati", week: 30, age: 24, flags: ["age"] },
+  { id: "first-visit", why: "No earlier visit → nothing to compare", name: "Sunita", week: 22, age: 24, flags: [] },
+];
+export { PAST as CONTINUITY_PAST };

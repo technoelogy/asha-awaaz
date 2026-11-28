@@ -10,7 +10,8 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { enforceGuardrails } from "../app/lib/validator";
 import type { VisitNote } from "../app/lib/schema";
 import { checkTranscript } from "../app/lib/inputCheck";
-import { GUARD_CASES, LIVE_CASES, INPUT_CASES, type EvalCase } from "./cases";
+import { checkContinuity } from "../app/lib/continuity";
+import { GUARD_CASES, LIVE_CASES, INPUT_CASES, CONTINUITY_CASES, CONTINUITY_PAST, type EvalCase } from "./cases";
 
 const live = process.argv.includes("--live");
 const BASE_URL = (process.env.BASE_URL || "https://asha-awaaz.vercel.app").replace(/\/$/, "");
@@ -75,6 +76,27 @@ async function main() {
       const pass = v.ok === c.ok;
       rows.push({ id: `input-${c.id}`, why: `${c.ok ? "let through" : "block"}: "${c.text}"`, pass, ms: 0, misses: pass ? [] : [`want ok=${c.ok}, got ok=${v.ok}`] });
       console.log(`${pass ? "✅" : "❌"} input-${c.id.padEnd(22)} ${c.ok ? "let through" : "block"}: "${c.text}"`);
+    }
+  }
+
+  if (!live) {
+    console.log("\nCross-visit check (memory across visits)");
+    for (const c of CONTINUITY_CASES) {
+      const got = checkContinuity(
+        { visit_id: "new", cohort: "pregnant", created_at: "2026-11-28T10:00:00Z",
+          beneficiary: { name: c.name, age: { value: c.age }, gestational_week: c.week } },
+        CONTINUITY_PAST,
+      );
+      const fields = got.map((f) => f.field).sort().join(",");
+      const misses: string[] = [];
+      if (fields !== [...c.flags].sort().join(",")) misses.push(`want flags [${c.flags}], got [${fields}]`);
+      if (c.expectedWeek != null) {
+        const w = got.find((f) => f.field === "gestational_week")?.expected;
+        if (w !== c.expectedWeek) misses.push(`want expected week ${c.expectedWeek}, got ${w}`);
+      }
+      rows.push({ id: `continuity-${c.id}`, why: c.why, pass: misses.length === 0, ms: 0, misses });
+      console.log(`${misses.length ? "❌" : "✅"} continuity-${c.id.padEnd(17)} ${c.why}`);
+      for (const m of misses) console.log(`     ↳ ${m}`);
     }
   }
 

@@ -464,3 +464,11 @@
 .aa-step[data-step="3"]:not([data-state="next"]) { background: #003153; color: #fff; }
 .aa-step:not([data-state="next"]) .aa-step-num { background: rgba(255,255,255,0.85); border-color: transparent; color: #003153; }
 .aa-step[data-state="now"] { box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px #003153; }
+
+/* --- cross-visit check ------------------------------------------------ */
+.aa-continuity { display: grid; gap: 8px; margin: 10px 0; }
+.aa-continuity-row {
+  padding: 10px 12px; border-radius: 12px; border: 1px solid #f1d9b5;
+  background: var(--aa-warn-bg); color: var(--aa-ink); font-size: 0.9rem;
+}
+.aa-continuity-row p { margin: 0 0 8px; line-height: 1.5; }

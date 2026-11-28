@@ -8,6 +8,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import ContinuityCheck from "./ContinuityCheck";
 import {
   VisitNote,
   FieldName,
@@ -233,6 +234,9 @@ export default function VisitNoteConfirm({
           </span>
         </div>
       )}
+
+      {/* Cross-visit memory: "28 weeks last time, 22 now?" */}
+      <ContinuityCheck note={note} onFix={(f, v) => apply(f, String(v))} />
 
       {/* Only unclear fields take space: one at a time, with the fixer. */}
       {unclearFields.length > 0 && (
