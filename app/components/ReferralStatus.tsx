@@ -24,6 +24,26 @@ function referred(r: Row): boolean {
   return !!ds && Object.values(ds).includes("present");
 }
 
+const SIGN_HI: Record<string, string> = {
+  severe_headache: "तेज़ सिरदर्द",
+  blurred_vision: "धुंधला दिखना",
+  swelling: "सूजन",
+  bleeding: "खून आना",
+  reduced_fetal_movement: "हलचल कम",
+  severe_pallor: "बहुत पीलापन",
+  breathlessness: "साँस फूलना",
+  heavy_bleeding: "ज़्यादा खून",
+};
+
+function signs(r: Row): string {
+  const ds =
+    r.record?.cohort === "adolescent" ? r.record?.adolescent_danger_signs : r.record?.danger_signs;
+  return Object.entries(ds ?? {})
+    .filter(([, v]) => v === "present")
+    .map(([k]) => SIGN_HI[k] ?? k)
+    .join(" · ");
+}
+
 function when(iso: string): string {
   const d = new Date(iso);
   return isNaN(d.getTime())
@@ -60,7 +80,12 @@ export default function ReferralStatus() {
           const seen = r.record?.referral?.acknowledged_at;
           return (
             <li key={r.id} data-seen={!!seen}>
-              <b>{r.beneficiary_name ?? "—"}</b>
+              <span className="aa-refs-who">
+                <b>{r.beneficiary_name ?? "—"}</b>
+                <small>
+                  {when(r.created_at)} · {signs(r)}
+                </small>
+              </span>
               <span className="aa-refs-status">
                 {seen ? `✓ PHC ने देखा · ${when(seen)}` : "⏳ PHC को भेजा · इंतज़ार"}
               </span>
